@@ -114,52 +114,126 @@ sub new($$) {
 			croak "bad tzfile: unsorted change times";
 		}
 	}
-	foreach (@obs_types) {
-		croak "bad tzfile: invalid local time type index"
-			if $_ >= $typecnt;
-		$_ = $types[$_];
-	}
-	my $first_std_type;
-	foreach my $type (@types) {
-		my $abbrind = $type->[2];
+	my $first_std_type_index;
+	my %offsets;
+	my $has_dst;
+	for(my $i = 0; $i != $typecnt; $i++) {
+		my $abbrind = $types[$i]->[2];
 		croak "bad tzfile: invalid abbreviation index"
 			if $abbrind > $charcnt;
 		pos($chars) = $abbrind;
 		$chars =~ /\G([^\0]*)/g;
-		$type->[2] = $1;
-		$first_std_type = $type
-			if !defined($first_std_type) && !$type->[1];
+		$types[$i]->[2] = $1;
+		$first_std_type_index = $i
+			if !defined($first_std_type_index) && !$types[$i]->[1];
+		$has_dst = 1 if $types[$i]->[1];
+		if($types[$i]->[2] eq "zzz") {
+			# "zzz" means the zone is not defined at this time,
+			# due for example to the location being uninhabited
+			$types[$i] = undef;
+		} else {
+			$offsets{$types[$i]->[0]} = undef;
+		}
 	}
 	unshift @obs_types,
-		defined($first_std_type) ? $first_std_type : $types[0];
+		defined($first_std_type_index) ? $first_std_type_index : 0;
+	foreach my $obs_type (@obs_types) {
+		croak "bad tzfile: invalid local time type index"
+			if $obs_type >= $typecnt;
+		$obs_type = $types[$obs_type];
+	}
+	$obs_types[-1] = $late_rule eq "" ? undef : eval {
+		require DateTime::TimeZone::SystemV;
+		DateTime::TimeZone::SystemV->new($late_rule);
+	};
 	return bless({
+		name => $filename,
+		has_dst => $has_dst,
 		trn_times => \@trn_times,
 		obs_types => \@obs_types,
-		late_rule => $late_rule,
+		offsets => [ sort { $a <=> $b } keys %offsets ],
 	}, $class);
 }
 
-sub _dump_obs($) {
-	my($obs) = @_;
-	return sprintf("%+5d,%s,%s", $obs->[0], $obs->[1] ? "dst" : "std",
-				     $obs->[2]);
+sub is_floating($) { 0 }
+sub is_utc($) { 0 }
+sub is_olson($) { 0 }
+sub category($) { undef }
+sub name($) { $_[0]->{name} }
+sub has_dst_changes($) { $_[0]->{has_dst} }
+
+sub _type_for_rdn_sod($$$) {
+	my($self, $utc_rdn, $utc_sod) = @_;
+	my $lo = 0;
+	my $hi = @{$self->{trn_times}};
+	while($lo != $hi) {
+		my $try = do { use integer; ($lo + $hi) / 2 };
+		if(($utc_rdn <=> $self->{trn_times}->[$try]->[0] ||
+		    $utc_sod <=> $self->{trn_times}->[$try]->[1]) == -1) {
+			$hi = $try;
+		} else {
+			$lo = $try + 1;
+		}
+	}
+	my $type = $self->{obs_type}->[$lo];
+	croak "local time not defined for this time" unless defined $type;
+	return $type;
 }
 
-sub dump($) {
-	use Date::ISO8601 qw(present_ymd);
-	use Date::JD qw(rdn_to_cjdn);
-	my($self) = @_;
-	printf "initial: %s\n", _dump_obs($self->{obs_types}->[0]);
-	for(my $i = 0; $i != @{$self->{trn_times}}; $i++) {
-		my($trn_rdn, $trn_secs) = @{$self->{trn_times}->[$i]};
-		printf "from %sT%02d:%02d:%02dZ: %s\n",
-			present_ymd(rdn_to_cjdn($trn_rdn)),
-			fdiv($trn_secs, 3600),
-			fdiv($trn_secs, 60) % 60,
-			$trn_secs % 60,
-			_dump_obs($self->{obs_types}->[$i+1]);
+sub _type_for_datetime($$) {
+	my($self, $dt) = @_;
+	my($utc_rdn, $utc_sod) = $dt->utc_rd_values;
+	$utc_sod = 86399 if $utc_sod >= 86400;
+	return $self->_type_for_rdn_sod($utc_rdn, $utc_sod);
+}
+
+sub is_dst_for_datetime($$) {
+	my($self, $dt) = @_;
+	my $type = $self->_type_for_datetime($dt);
+	return ref($type) eq "ARRAY" ? $type->[1] :
+		$type->is_dst_for_datetime($dt);
+}
+
+sub offest_for_datetime($$) {
+	my($self, $dt) = @_;
+	my $type = $self->_type_for_datetime($dt);
+	return ref($type) eq "ARRAY" ? $type->[0] :
+		$type->offset_for_datetime($dt);
+}
+
+sub short_name_for_datetime($$) {
+	my($self, $dt) = @_;
+	my $type = $self->_type_for_datetime($dt);
+	return ref($type) eq "ARRAY" ? $type->[2] :
+		$type->short_name_for_datetime($dt);
+}
+
+sub _local_to_utc_rdn_sod($$$) {
+	my($rdn, $sod, $offset) = @_;
+	$sod -= $offset;
+	while($sod < 0) {
+		$rdn--;
+		$sod += 86400;
 	}
-	printf "later: %s\n", $self->{late_rule};
+	while($sod >= 86400) {
+		$rdn++;
+		$sod -= 86400;
+	}
+	return ($rdn, $sod);
+}
+
+sub offset_for_local_datetime($$) {
+	my($self, $dt) = @_;
+	my($lcl_rdn, $lcl_sod) = $dt->local_rd_values;
+	$lcl_sod = 86399 if $lcl_sod >= 86400;
+	foreach my $offset (@{$self->{offsets}}) {
+		my($utc_rdn, $utc_sod) =
+			_local_to_utc_rdn_sod($lcl_rdn, $lcl_sod, $offset);
+		my $toffset =
+			eval { $self->offset_for_rdn_sod($utc_rdn, $utc_sod) };
+		return $offset if defined($toffset) && $toffset == $offset;
+	}
+	croak "non-existent local time due to offset change";
 }
 
 1;

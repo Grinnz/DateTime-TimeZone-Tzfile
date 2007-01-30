@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+
+use Date::ISO8601 0.000 qw(present_ymd);
+use Date::JD 0.001 qw(rdn_to_cjdn);
+use DateTime::TimeZone::Tzfile;
+
+BEGIN {
+	*fdiv = \&DateTime::TimeZone::Tzfile::fdiv;
+	*fmod = \&DateTime::TimeZone::Tzfile::fmod;
+}
+
+my $tz = DateTime::TimeZone::Tzfile->new($ARGV[0]);
+
+sub dump_obs($) {
+	my($obs) = @_;
+	return "undefined" unless defined $obs;
+	return $obs if ref($obs) eq "";
+	return sprintf("%+6d,%s,%s", $obs->[0], $obs->[1] ? "dst" : "std",
+				     $obs->[2])
+		if ref($obs) eq "ARRAY";
+	return "$obs";
+}
+
+printf "initial: %s\n", dump_obs($tz->{obs_types}->[0]);
+for(my $i = 0; $i != @{$tz->{trn_times}}; $i++) {
+	my($trn_rdn, $trn_secs) = @{$tz->{trn_times}->[$i]};
+	printf "from %sT%02d:%02d:%02dZ: %s\n",
+		present_ymd(rdn_to_cjdn($trn_rdn)),
+		fdiv($trn_secs, 3600),
+		fdiv($trn_secs, 60) % 60,
+		$trn_secs % 60,
+		dump_obs($tz->{obs_types}->[$i+1]);
+}
+printf "all offsets: %s\n",
+	join(", ", map { sprintf("%+d", $_) } @{$tz->{offsets}});
