@@ -4,18 +4,28 @@ use warnings;
 use strict;
 
 use Carp qw(croak);
-use IO::File;
+use IO::File 1.03;
+
+# fdiv(A, B), fmod(A, B): divide A by B, flooring remainder
+#
+# B must be a positive Perl integer.  A must be a Perl integer.
 
 sub fdiv($$) {
-	# TODO: do this properly
-	use POSIX qw(floor);
-	return floor($_[0] / $_[1]);
+	my($a, $b) = @_;
+	if($a < 0) {
+		use integer;
+		return -(($b - 1 - $a) / $b);
+	} else {
+		use integer;
+		return $a / $b;
+	}
 }
 
-sub fmod($$) {
-	# TODO: do this properly
-	return $_[0] - $_[1] * fdiv($_[0], $_[1]);
-}
+sub fmod($$) { $_[0] % $_[1] }
+
+#
+# file reading
+#
 
 sub _saferead($$) {
 	my($fh, $len) = @_;
@@ -44,7 +54,6 @@ sub _read_tm32($) {
 }
 
 sub _read_tm64($) {
-	# TODO: make this neater
 	my($fh) = @_;
 	my $th = _read_s32($fh);
 	my $tl = _read_u32($fh);
@@ -60,9 +69,12 @@ sub _read_tm64($) {
 	return [ UNIX_EPOCH_RDN + $d, $th ];
 }
 
+#
+# construct object, reading tzfile
+#
+
 sub new($$) {
 	my($class, $filename) = @_;
-	#croak "filename must be absolute" unless $filename =~ m#\A/#;
 	my $fh = IO::File->new($filename, "r")
 		or croak "can't read $filename: $!";
 	croak "bad tzfile: wrong magic number"
@@ -155,11 +167,20 @@ sub new($$) {
 	}, $class);
 }
 
+#
+# identity methods
+#
+
 sub is_floating($) { 0 }
 sub is_utc($) { 0 }
 sub is_olson($) { 0 }
 sub category($) { undef }
 sub name($) { $_[0]->{name} }
+
+#
+# offset methods
+#
+
 sub has_dst_changes($) { $_[0]->{has_dst} }
 
 sub _type_for_rdn_sod($$$) {
@@ -175,7 +196,7 @@ sub _type_for_rdn_sod($$$) {
 			$lo = $try + 1;
 		}
 	}
-	my $type = $self->{obs_type}->[$lo];
+	my $type = $self->{obs_types}->[$lo];
 	croak "local time not defined for this time" unless defined $type;
 	return $type;
 }
@@ -194,7 +215,7 @@ sub is_dst_for_datetime($$) {
 		$type->is_dst_for_datetime($dt);
 }
 
-sub offest_for_datetime($$) {
+sub offset_for_datetime($$) {
 	my($self, $dt) = @_;
 	my $type = $self->_type_for_datetime($dt);
 	return ref($type) eq "ARRAY" ? $type->[0] :
@@ -229,9 +250,10 @@ sub offset_for_local_datetime($$) {
 	foreach my $offset (@{$self->{offsets}}) {
 		my($utc_rdn, $utc_sod) =
 			_local_to_utc_rdn_sod($lcl_rdn, $lcl_sod, $offset);
-		my $toffset =
-			eval { $self->offset_for_rdn_sod($utc_rdn, $utc_sod) };
-		return $offset if defined($toffset) && $toffset == $offset;
+		my $ttype =
+			eval { $self->_type_for_rdn_sod($utc_rdn, $utc_sod) };
+		return $ttype->[0]
+			if defined($ttype) && $ttype->[0] == $offset;
 	}
 	croak "non-existent local time due to offset change";
 }
