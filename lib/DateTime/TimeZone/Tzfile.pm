@@ -63,7 +63,7 @@ sub fmod($$) { $_[0] % $_[1] }
 
 =over
 
-=item DateTime::TimeZone::SystemV->new(FILENAME)
+=item DateTime::TimeZone::Tzfile->new(FILENAME)
 
 I<FILENAME> must be a filename that can be interpreted by L<IO::File>,
 and the file to which it refers must be in L<tzfile(5)> format.  Reads and
@@ -195,7 +195,7 @@ sub new($$) {
 			if $obs_type >= $typecnt;
 		$obs_type = $types[$obs_type];
 	}
-	$obs_types[-1] = $late_rule eq "" ? undef : eval {
+	$obs_types[-1] = $late_rule eq "" ? undef : do {
 		require DateTime::TimeZone::SystemV;
 		DateTime::TimeZone::SystemV->new($late_rule);
 	};
