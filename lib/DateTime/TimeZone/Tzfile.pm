@@ -1,3 +1,37 @@
+=head1 NAME
+
+DateTime::TimeZone::Tzfile - tzfile (zoneinfo) timezone files
+
+=head1 SYNOPSIS
+
+	use DateTime::TimeZone::Tzfile;
+
+	$tz = DateTime::TimeZone::Tzfile->new("/etc/localtime");
+
+	if($tz->is_floating) { ...
+	if($tz->is_utc) { ...
+	if($tz->is_olson) { ...
+	$category = $tz->category;
+	$tz_string = $tz->name;
+
+	if($tz->has_dst_changes) { ...
+	if($tz->is_dst_for_datetime($dt)) { ...
+	$offset = $tz->offset_for_datetime($dt);
+	$abbrev = $tz->short_name_for_datetime($dt);
+	$offset = $tz->offset_for_local_datetime($dt);
+
+=head1 DESCRIPTION
+
+An instance of this class represents a timezone that was encoded in a
+file in the L<tzfile(5)> format.  These can express arbitrary patterns
+of offsets from Universal Time, changing over time.  Offsets and change
+times are limited to a resolution of one second.
+
+This class implements the L<DateTime::TimeZone> interface, so that its
+instances can be used with L<DateTime> objects.
+
+=cut
+
 package DateTime::TimeZone::Tzfile;
 
 use warnings;
@@ -5,6 +39,8 @@ use strict;
 
 use Carp qw(croak);
 use IO::File 1.03;
+
+our $VERSION = "0.000";
 
 # fdiv(A, B), fmod(A, B): divide A by B, flooring remainder
 #
@@ -23,9 +59,18 @@ sub fdiv($$) {
 
 sub fmod($$) { $_[0] % $_[1] }
 
-#
-# file reading
-#
+=head1 CONSTRUCTOR
+
+=over
+
+=item DateTime::TimeZone::SystemV->new(FILENAME)
+
+I<FILENAME> must be a filename that can be interpreted by L<IO::File>,
+and the file to which it refers must be in L<tzfile(5)> format.  Reads and
+parses the file, then constructs and returns a L<DateTime>-compatible
+timezone object that implements the timezone encoded in the file.
+
+=cut
 
 sub _saferead($$) {
 	my($fh, $len) = @_;
@@ -68,10 +113,6 @@ sub _read_tm64($) {
 	my $d = $dh * 4294967296 + $d2 * 4194304 + (($d3 << 12) + $d4);
 	return [ UNIX_EPOCH_RDN + $d, $th ];
 }
-
-#
-# construct object, reading tzfile
-#
 
 sub new($$) {
 	my($class, $filename) = @_;
@@ -167,21 +208,79 @@ sub new($$) {
 	}, $class);
 }
 
-#
-# identity methods
-#
+=back
+
+=head1 METHODS
+
+These methods are all part of the L<DateTime::TimeZone> interface.
+See that class for the general meaning of these methods; the documentation
+below only comments on the specific behaviour of this class.
+
+=head2 Identification
+
+=over
+
+=item $tz->is_floating
+
+Returns false.
+
+=cut
 
 sub is_floating($) { 0 }
+
+=item $tz->is_utc
+
+Returns false.
+
+=cut
+
 sub is_utc($) { 0 }
+
+=item $tz->is_olson
+
+Returns false.  The files interpreted by this class are actually very
+likely to be from the Olson database, so proper behaviour of this method
+is yet to be determined and may change in a future version.
+
+=cut
+
 sub is_olson($) { 0 }
+
+=item $tz->category
+
+Returns C<undef>, because the category can't be determined from the file.
+
+=cut
+
 sub category($) { undef }
+
+=item $tz->name
+
+Returns the I<FILENAME> that was supplied to the constructor.
+
+=cut
+
 sub name($) { $_[0]->{name} }
 
-#
-# offset methods
-#
+=back
+
+=head2 Offsets
+
+=over
+
+=item $tz->has_dst_changes
+
+Returns a boolean indicating whether any of the observances in the file
+are marked as DST.  These DST flags are potentially arbitrary, and don't
+affect any of the zone's behaviour.
+
+=cut
 
 sub has_dst_changes($) { $_[0]->{has_dst} }
+
+#
+# observance lookup
+#
 
 sub _type_for_rdn_sod($$$) {
 	my($self, $utc_rdn, $utc_sod) = @_;
@@ -208,12 +307,13 @@ sub _type_for_datetime($$) {
 	return $self->_type_for_rdn_sod($utc_rdn, $utc_sod);
 }
 
-sub is_dst_for_datetime($$) {
-	my($self, $dt) = @_;
-	my $type = $self->_type_for_datetime($dt);
-	return ref($type) eq "ARRAY" ? $type->[1] :
-		$type->is_dst_for_datetime($dt);
-}
+=item $tz->offset_for_datetime(DT)
+
+I<DT> must be a L<DateTime>-compatible object (specifically, it must
+implement the C<utc_rd_values> method).  Returns the offset from UT that
+is in effect at the instant represented by I<DT>, in seconds.
+
+=cut
 
 sub offset_for_datetime($$) {
 	my($self, $dt) = @_;
@@ -222,12 +322,56 @@ sub offset_for_datetime($$) {
 		$type->offset_for_datetime($dt);
 }
 
+=item $tz->is_dst_for_datetime(DT)
+
+I<DT> must be a L<DateTime>-compatible object (specifically, it must
+implement the C<utc_rd_values> method).  Returns a boolean indicating
+whether the timezone's observance at the instant represented by I<DT>
+is marked as DST.  This DST flag is potentially arbitrary, and doesn't
+affect anything else.
+
+=cut
+
+sub is_dst_for_datetime($$) {
+	my($self, $dt) = @_;
+	my $type = $self->_type_for_datetime($dt);
+	return ref($type) eq "ARRAY" ? $type->[1] :
+		$type->is_dst_for_datetime($dt);
+}
+
+=item $tz->short_name_for_datetime(DT)
+
+I<DT> must be a L<DateTime>-compatible object (specifically, it must
+implement the C<utc_rd_values> method).  Returns the abbreviation
+used to label the time scale at the instant represented by I<DT>.
+This abbreviation is potentially arbitrary, and does not uniquely identify
+either the timezone or the offset.
+
+=cut
+
 sub short_name_for_datetime($$) {
 	my($self, $dt) = @_;
 	my $type = $self->_type_for_datetime($dt);
 	return ref($type) eq "ARRAY" ? $type->[2] :
 		$type->short_name_for_datetime($dt);
 }
+
+=item $tz->offset_for_local_datetime(DT)
+
+I<DT> must be a L<DateTime>-compatible object (specifically, it
+must implement the C<local_rd_values> method).  Takes the local
+time represented by I<DT> (regardless of what absolute time it also
+represents), and interprets that as a local time in the timezone of the
+timezone object (not the timezone used in I<DT>).  Returns the offset
+from UT that is in effect at that local time.
+
+If the local time given is ambiguous due to a nearby offest change,
+the numerically lowest offset (usually the standard one) is returned
+with no warning of the situation.  (Equivalently: the latest possible
+absolute time is indicated.)  If the local time given does not exist
+due to a nearby offset change, the method C<die>s saying so.
+
+=cut
 
 sub _local_to_utc_rdn_sod($$$) {
 	my($rdn, $sod, $offset) = @_;
@@ -257,5 +401,26 @@ sub offset_for_local_datetime($$) {
 	}
 	croak "non-existent local time due to offset change";
 }
+
+=back
+
+=head1 SEE ALSO
+
+L<DateTime>,
+L<DateTime::TimeZone>,
+L<tzfile(5)>
+
+=head1 AUTHOR
+
+Andrew Main (Zefram) <zefram@fysh.org>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2007 Andrew Main (Zefram) <zefram@fysh.org>
+
+This module is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
 
 1;
