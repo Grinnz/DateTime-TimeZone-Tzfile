@@ -39,6 +39,7 @@ use strict;
 
 use Carp qw(croak);
 use IO::File 1.03;
+use IO::Handle 1.08;
 
 our $VERSION = "0.000";
 

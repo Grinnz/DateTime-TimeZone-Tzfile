@@ -6,5 +6,6 @@ WriteMakefile(
 	PREREQ_PM => {
 		DateTime::TimeZone::SystemV => "0.000",
 		IO::File => "1.03",
+		IO::Handle => "1.08",
 	},
 );
