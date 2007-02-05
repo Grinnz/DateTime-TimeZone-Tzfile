@@ -363,7 +363,7 @@ must implement the C<local_rd_values> method).  Takes the local
 time represented by I<DT> (regardless of what absolute time it also
 represents), and interprets that as a local time in the timezone of the
 timezone object (not the timezone used in I<DT>).  Returns the offset
-from UT that is in effect at that local time.
+from UT that is in effect at that local time, in seconds.
 
 If the local time given is ambiguous due to a nearby offest change,
 the numerically lowest offset (usually the standard one) is returned
