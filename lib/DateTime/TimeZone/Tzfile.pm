@@ -239,8 +239,10 @@ sub is_utc($) { 0 }
 =item $tz->is_olson
 
 Returns false.  The files interpreted by this class are actually very
-likely to be from the Olson database, so proper behaviour of this method
-is yet to be determined and may change in a future version.
+likely to be from the Olson database, but false is returned to indicate
+that the values returned by the C<category> and C<name> methods are not
+as would be expected for an Olson timezone.  This behaviour may change
+in a future version.
 
 =cut
 
