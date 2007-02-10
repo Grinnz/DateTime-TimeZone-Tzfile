@@ -1,6 +1,6 @@
 * tests for identity methods
 
-* tests for local offset
+* fix local offset where delegated to SysV
 
 * option to give separate name
 
