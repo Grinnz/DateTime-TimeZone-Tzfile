@@ -12,7 +12,8 @@ sub try($$) {
 	my $dt = DateTime->new(year => $1, month => $2, day => $3,
 			       hour => $4, minute => $5, second => $6,
 			       time_zone => "floating");
-	is eval { $tz->offset_for_local_datetime($dt) }, $offset;
+	is eval { $tz->offset_for_local_datetime($dt) }, $offset,
+		"offset for $timespec";
 }
 
 $tz = DateTime::TimeZone::Tzfile->new("t/london.tz");

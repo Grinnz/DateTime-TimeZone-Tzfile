@@ -399,8 +399,11 @@ sub offset_for_local_datetime($$) {
 			_local_to_utc_rdn_sod($lcl_rdn, $lcl_sod, $offset);
 		my $ttype =
 			eval { $self->_type_for_rdn_sod($utc_rdn, $utc_sod) };
-		return $ttype->[0]
-			if defined($ttype) && $ttype->[0] == $offset;
+		next unless defined $ttype;
+		my $local_offset = ref($ttype) eq "ARRAY" ? $ttype->[0] :
+			eval { $ttype->offset_for_local_datetime($dt) };
+		return $offset
+			if defined($local_offset) && $local_offset == $offset;
 	}
 	croak "non-existent local time due to offset change";
 }
