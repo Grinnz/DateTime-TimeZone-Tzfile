@@ -397,11 +397,14 @@ sub offset_for_local_datetime($$) {
 	foreach my $offset (@{$self->{offsets}}) {
 		my($utc_rdn, $utc_sod) =
 			_local_to_utc_rdn_sod($lcl_rdn, $lcl_sod, $offset);
-		my $ttype =
-			eval { $self->_type_for_rdn_sod($utc_rdn, $utc_sod) };
+		my $ttype = eval { local $SIG{__DIE__};
+			$self->_type_for_rdn_sod($utc_rdn, $utc_sod);
+		};
 		next unless defined $ttype;
 		my $local_offset = ref($ttype) eq "ARRAY" ? $ttype->[0] :
-			eval { $ttype->offset_for_local_datetime($dt) };
+			eval { local $SIG{__DIE__};
+				$ttype->offset_for_local_datetime($dt);
+			};
 		return $offset
 			if defined($local_offset) && $local_offset == $offset;
 	}
