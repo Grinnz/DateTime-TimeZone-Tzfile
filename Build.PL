@@ -16,7 +16,7 @@ Module::Build->new(
 	},
 	requires => {
 		Carp => 0,
-		DateTime::TimeZone::SystemV => 0,
+		DateTime::TimeZone::SystemV => "0.002",
 		IO::File => "1.03",
 		IO::Handle => "1.08",
 		constant => 0,

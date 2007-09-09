@@ -198,6 +198,7 @@ sub new($$) {
 	}
 	$obs_types[-1] = $late_rule eq "" ? undef : do {
 		require DateTime::TimeZone::SystemV;
+		DateTime::TimeZone::SystemV->VERSION("0.002");
 		DateTime::TimeZone::SystemV->new($late_rule);
 	};
 	return bless({
