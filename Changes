@@ -3,6 +3,12 @@
   * bugfix: require bugfixed version of DateTime::TimeZone::SystemV
     (for $SIG{__DIE__} handling)
 
+  * new key/value constructor parameter style
+
+  * constructor option to set timezone name independently from filename
+
+  * use "fields" module to structure object
+
   * build with Module::Build instead of ExtUtils::MakeMaker
 
   * complete dependency list
