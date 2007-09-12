@@ -44,7 +44,7 @@ use Carp qw(croak);
 use IO::File 1.03;
 use IO::Handle 1.08;
 
-our $VERSION = "0.000";
+our $VERSION = "0.001";
 
 use fields qw(name has_dst trn_times obs_types offsets);
 
