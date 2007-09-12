@@ -7,6 +7,8 @@
 
   * constructor option to set timezone name independently from filename
 
+  * constructor option to supply an open filehandle
+
   * use "fields" module to structure object
 
   * build with Module::Build instead of ExtUtils::MakeMaker

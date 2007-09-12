@@ -87,10 +87,18 @@ method described below.
 Name of the file from which to read the timezone data.  The filename
 must be understood by L<IO::File>.
 
+=item B<filehandle>
+
+An L<IO::Handle> object from which the timezone data can be read.
+This does not need to be a regular seekable file; it is read sequentially.
+After the constructor has finished, the handle can still be used to read
+any data that follows the timezone data.
+
 =back
 
-The filename must be given.  If a timezone name is not given, then the
-filename is used instead.
+Either a filename or filename must be given.  If a timezone name is not
+given, then the filename is used instead if supplied; a timezone name
+must be given explicitly if no filename is given.
 
 =item DateTime::TimeZone::Tzfile->new(FILENAME)
 
@@ -145,7 +153,7 @@ sub new($$) {
 	my $class = shift;
 	unshift @_, "filename" if @_ == 1;
 	my DateTime::TimeZone::Tzfile $self = fields::new($class);
-	my $filename;
+	my($filename, $fh);
 	while(@_) {
 		my $attr = shift;
 		my $value = shift;
@@ -155,16 +163,25 @@ sub new($$) {
 			$self->{name} = $value;
 		} elsif($attr eq "filename") {
 			croak "filename specified redundantly"
-				if defined $filename;
+				if defined($filename) || defined($fh);
 			$filename = $value;
+		} elsif($attr eq "filehandle") {
+			croak "filehandle specified redundantly"
+				if defined($filename) || defined($fh);
+			$fh = $value;
 		} else {
 			croak "unrecognised attribute `$attr'";
 		}
 	}
-	croak "filename not specified" unless defined $filename;
-	$self->{name} = $filename unless exists $self->{name};
-	my $fh = IO::File->new($filename, "r")
-		or croak "can't read $filename: $!";
+	croak "file not specified" unless defined($filename) || defined($fh);
+	unless(exists $self->{name}) {
+		croak "timezone name not specified" unless defined $filename;
+		$self->{name} = $filename;
+	}
+	if(defined $filename) {
+		$fh = IO::File->new($filename, "r")
+			or croak "can't read $filename: $!";
+	}
 	croak "bad tzfile: wrong magic number"
 		unless _saferead($fh, 4) eq "TZif";
 	my $fmtversion = _saferead($fh, 1);
