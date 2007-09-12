@@ -20,6 +20,7 @@ Module::Build->new(
 		IO::File => "1.03",
 		IO::Handle => "1.08",
 		constant => 0,
+		fields => 0,
 		perl => "5.006",
 		strict => 0,
 		warnings => 0,

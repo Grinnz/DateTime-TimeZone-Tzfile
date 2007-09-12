@@ -43,6 +43,8 @@ use IO::Handle 1.08;
 
 our $VERSION = "0.000";
 
+use fields qw(name has_dst trn_times obs_types offsets);
+
 # fdiv(A, B), fmod(A, B): divide A by B, flooring remainder
 #
 # B must be a positive Perl integer.  A must be a Perl integer.
@@ -201,13 +203,13 @@ sub new($$) {
 		DateTime::TimeZone::SystemV->VERSION("0.002");
 		DateTime::TimeZone::SystemV->new($late_rule);
 	};
-	return bless({
-		name => $filename,
-		has_dst => $has_dst,
-		trn_times => \@trn_times,
-		obs_types => \@obs_types,
-		offsets => [ sort { $a <=> $b } keys %offsets ],
-	}, $class);
+	my DateTime::TimeZone::SystemV $self = fields::new($class);
+	$self->{name} = $filename;
+	$self->{has_dst} = $has_dst;
+	$self->{trn_times} = \@trn_times;
+	$self->{obs_types} = \@obs_types;
+	$self->{offsets} = [ sort { $a <=> $b } keys %offsets ];
+	return $self;
 }
 
 =back
@@ -264,7 +266,10 @@ Returns the I<FILENAME> that was supplied to the constructor.
 
 =cut
 
-sub name($) { $_[0]->{name} }
+sub name($) {
+	my DateTime::TimeZone::SystemV $self = shift;
+	return $self->{name};
+}
 
 =back
 
@@ -280,14 +285,18 @@ affect any of the zone's behaviour.
 
 =cut
 
-sub has_dst_changes($) { $_[0]->{has_dst} }
+sub has_dst_changes($) {
+	my DateTime::TimeZone::SystemV $self = shift;
+	return $self->{has_dst};
+}
 
 #
 # observance lookup
 #
 
 sub _type_for_rdn_sod($$$) {
-	my($self, $utc_rdn, $utc_sod) = @_;
+	my DateTime::TimeZone::SystemV $self = shift;
+	my($utc_rdn, $utc_sod) = @_;
 	my $lo = 0;
 	my $hi = @{$self->{trn_times}};
 	while($lo != $hi) {
@@ -305,7 +314,8 @@ sub _type_for_rdn_sod($$$) {
 }
 
 sub _type_for_datetime($$) {
-	my($self, $dt) = @_;
+	my DateTime::TimeZone::SystemV $self = shift;
+	my($dt) = @_;
 	my($utc_rdn, $utc_sod) = $dt->utc_rd_values;
 	$utc_sod = 86399 if $utc_sod >= 86400;
 	return $self->_type_for_rdn_sod($utc_rdn, $utc_sod);
@@ -320,7 +330,8 @@ is in effect at the instant represented by I<DT>, in seconds.
 =cut
 
 sub offset_for_datetime($$) {
-	my($self, $dt) = @_;
+	my DateTime::TimeZone::SystemV $self = shift;
+	my($dt) = @_;
 	my $type = $self->_type_for_datetime($dt);
 	return ref($type) eq "ARRAY" ? $type->[0] :
 		$type->offset_for_datetime($dt);
@@ -337,7 +348,8 @@ affect anything else.
 =cut
 
 sub is_dst_for_datetime($$) {
-	my($self, $dt) = @_;
+	my DateTime::TimeZone::SystemV $self = shift;
+	my($dt) = @_;
 	my $type = $self->_type_for_datetime($dt);
 	return ref($type) eq "ARRAY" ? $type->[1] :
 		$type->is_dst_for_datetime($dt);
@@ -354,7 +366,8 @@ either the timezone or the offset.
 =cut
 
 sub short_name_for_datetime($$) {
-	my($self, $dt) = @_;
+	my DateTime::TimeZone::SystemV $self = shift;
+	my($dt) = @_;
 	my $type = $self->_type_for_datetime($dt);
 	return ref($type) eq "ARRAY" ? $type->[2] :
 		$type->short_name_for_datetime($dt);
@@ -392,7 +405,8 @@ sub _local_to_utc_rdn_sod($$$) {
 }
 
 sub offset_for_local_datetime($$) {
-	my($self, $dt) = @_;
+	my DateTime::TimeZone::SystemV $self = shift;
+	my($dt) = @_;
 	my($lcl_rdn, $lcl_sod) = $dt->local_rd_values;
 	$lcl_sod = 86399 if $lcl_sod >= 86400;
 	foreach my $offset (@{$self->{offsets}}) {
