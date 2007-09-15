@@ -8,6 +8,7 @@ Module::Build->new(
 	module_name => "DateTime::TimeZone::Tzfile",
 	license => "perl",
 	build_requires => {
+		IO::File => "1.03",
 		Module::Build => 0,
 		Test::More => 0,
 		perl => "5.006",
@@ -21,6 +22,7 @@ Module::Build->new(
 		IO::Handle => "1.08",
 		constant => 0,
 		fields => 0,
+		integer => 0,
 		perl => "5.006",
 		strict => 0,
 		warnings => 0,
