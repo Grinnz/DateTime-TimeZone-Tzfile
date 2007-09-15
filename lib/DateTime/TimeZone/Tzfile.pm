@@ -501,6 +501,8 @@ Andrew Main (Zefram) <zefram@fysh.org>
 
 Copyright (C) 2007 Andrew Main (Zefram) <zefram@fysh.org>
 
+=head1 LICENSE
+
 This module is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
