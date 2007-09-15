@@ -48,11 +48,11 @@ our $VERSION = "0.001";
 
 use fields qw(name has_dst trn_times obs_types offsets);
 
-# fdiv(A, B), fmod(A, B): divide A by B, flooring remainder
+# _fdiv(A, B), _fmod(A, B): divide A by B, flooring remainder
 #
 # B must be a positive Perl integer.  A must be a Perl integer.
 
-sub fdiv($$) {
+sub _fdiv($$) {
 	my($a, $b) = @_;
 	if($a < 0) {
 		use integer;
@@ -63,7 +63,7 @@ sub fdiv($$) {
 	}
 }
 
-sub fmod($$) { $_[0] % $_[1] }
+sub _fmod($$) { $_[0] % $_[1] }
 
 =head1 CONSTRUCTOR
 
@@ -130,21 +130,21 @@ use constant UNIX_EPOCH_RDN => 719163;
 
 sub _read_tm32($) {
 	my $t = _read_s32($_[0]);
-	return [ UNIX_EPOCH_RDN + fdiv($t, 86400), fmod($t, 86400) ];
+	return [ UNIX_EPOCH_RDN + _fdiv($t, 86400), _fmod($t, 86400) ];
 }
 
 sub _read_tm64($) {
 	my($fh) = @_;
 	my $th = _read_s32($fh);
 	my $tl = _read_u32($fh);
-	my $dh = fdiv($th, 86400);
-	$th = (fmod($th, 86400) << 10) | ($tl >> 22);
-	my $d2 = fdiv($th, 86400);
-	$th = (fmod($th, 86400) << 10) | (($tl >> 12) & 0x3ff);
-	my $d3 = fdiv($th, 86400);
-	$th = (fmod($th, 86400) << 12) | ($tl & 0xfff);
-	my $d4 = fdiv($th, 86400);
-	$th = fmod($th, 86400);
+	my $dh = _fdiv($th, 86400);
+	$th = (_fmod($th, 86400) << 10) | ($tl >> 22);
+	my $d2 = _fdiv($th, 86400);
+	$th = (_fmod($th, 86400) << 10) | (($tl >> 12) & 0x3ff);
+	my $d3 = _fdiv($th, 86400);
+	$th = (_fmod($th, 86400) << 12) | ($tl & 0xfff);
+	my $d4 = _fdiv($th, 86400);
+	$th = _fmod($th, 86400);
 	my $d = $dh * 4294967296 + $d2 * 4194304 + (($d3 << 12) + $d4);
 	return [ UNIX_EPOCH_RDN + $d, $th ];
 }

@@ -1,3 +1,6 @@
+  * test POD syntax and coverage, and rename some internal functions to
+    satisfy the coverage test
+
   * really complete dependency list (was missing "integer", and
     build_requires was missing "IO::File")
 
