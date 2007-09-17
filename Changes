@@ -1,3 +1,5 @@
+  * typo fix in documentation
+
   * test POD syntax and coverage, and rename some internal functions to
     satisfy the coverage test
 

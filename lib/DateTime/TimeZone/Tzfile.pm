@@ -441,7 +441,7 @@ represents), and interprets that as a local time in the timezone of the
 timezone object (not the timezone used in I<DT>).  Returns the offset
 from UT that is in effect at that local time, in seconds.
 
-If the local time given is ambiguous due to a nearby offest change,
+If the local time given is ambiguous due to a nearby offset change,
 the numerically lowest offset (usually the standard one) is returned
 with no warning of the situation.  (Equivalently: the latest possible
 absolute time is indicated.)  If the local time given does not exist
