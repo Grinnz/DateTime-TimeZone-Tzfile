@@ -1,6 +1,8 @@
   * test POD syntax and coverage, and rename some internal functions to
     satisfy the coverage test
 
+  * in tests, avoid unreliable "\d" regexp element
+
   * typo fix in documentation
 
   * really complete dependency list (was missing "integer", and
