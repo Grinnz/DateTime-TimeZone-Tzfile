@@ -12,6 +12,8 @@
 
   * in documentation, separate "license" section from "copyright" section
 
+  * use full stricture in Build.PL
+
   * remove from .cvsignore items that don't occur with Module::Build
 
 version 0.001; 2007-09-12
