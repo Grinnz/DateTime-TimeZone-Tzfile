@@ -149,7 +149,7 @@ sub _read_tm64($) {
 	return [ UNIX_EPOCH_RDN + $d, $th ];
 }
 
-sub new($$) {
+sub new {
 	my $class = shift;
 	unshift @_, "filename" if @_ == 1;
 	my DateTime::TimeZone::Tzfile $self = fields::new($class);
@@ -287,7 +287,7 @@ Returns false.
 
 =cut
 
-sub is_floating($) { 0 }
+sub is_floating { 0 }
 
 =item $tz->is_utc
 
@@ -295,7 +295,7 @@ Returns false.
 
 =cut
 
-sub is_utc($) { 0 }
+sub is_utc { 0 }
 
 =item $tz->is_olson
 
@@ -307,7 +307,7 @@ in a future version.
 
 =cut
 
-sub is_olson($) { 0 }
+sub is_olson { 0 }
 
 =item $tz->category
 
@@ -315,7 +315,7 @@ Returns C<undef>, because the category can't be determined from the file.
 
 =cut
 
-sub category($) { undef }
+sub category { undef }
 
 =item $tz->name
 
@@ -325,7 +325,7 @@ attribute.
 
 =cut
 
-sub name($) {
+sub name {
 	my DateTime::TimeZone::Tzfile $self = shift;
 	return $self->{name};
 }
@@ -344,7 +344,7 @@ affect any of the zone's behaviour.
 
 =cut
 
-sub has_dst_changes($) {
+sub has_dst_changes {
 	my DateTime::TimeZone::Tzfile $self = shift;
 	return $self->{has_dst};
 }
@@ -353,7 +353,7 @@ sub has_dst_changes($) {
 # observance lookup
 #
 
-sub _type_for_rdn_sod($$$) {
+sub _type_for_rdn_sod {
 	my DateTime::TimeZone::Tzfile $self = shift;
 	my($utc_rdn, $utc_sod) = @_;
 	my $lo = 0;
@@ -372,7 +372,7 @@ sub _type_for_rdn_sod($$$) {
 	return $type;
 }
 
-sub _type_for_datetime($$) {
+sub _type_for_datetime {
 	my DateTime::TimeZone::Tzfile $self = shift;
 	my($dt) = @_;
 	my($utc_rdn, $utc_sod) = $dt->utc_rd_values;
@@ -388,7 +388,7 @@ is in effect at the instant represented by I<DT>, in seconds.
 
 =cut
 
-sub offset_for_datetime($$) {
+sub offset_for_datetime {
 	my DateTime::TimeZone::Tzfile $self = shift;
 	my($dt) = @_;
 	my $type = $self->_type_for_datetime($dt);
@@ -406,7 +406,7 @@ affect anything else.
 
 =cut
 
-sub is_dst_for_datetime($$) {
+sub is_dst_for_datetime {
 	my DateTime::TimeZone::Tzfile $self = shift;
 	my($dt) = @_;
 	my $type = $self->_type_for_datetime($dt);
@@ -424,7 +424,7 @@ either the timezone or the offset.
 
 =cut
 
-sub short_name_for_datetime($$) {
+sub short_name_for_datetime {
 	my DateTime::TimeZone::Tzfile $self = shift;
 	my($dt) = @_;
 	my $type = $self->_type_for_datetime($dt);
@@ -463,7 +463,7 @@ sub _local_to_utc_rdn_sod($$$) {
 	return ($rdn, $sod);
 }
 
-sub offset_for_local_datetime($$) {
+sub offset_for_local_datetime {
 	my DateTime::TimeZone::Tzfile $self = shift;
 	my($dt) = @_;
 	my($lcl_rdn, $lcl_sod) = $dt->local_rd_values;

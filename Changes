@@ -1,6 +1,8 @@
   * test POD syntax and coverage, and rename some internal functions to
     satisfy the coverage test
 
+  * drop prototypes from method subs (where the prototypes have no effect)
+
   * in tests, avoid unreliable "\d" regexp element
 
   * typo fix in documentation
