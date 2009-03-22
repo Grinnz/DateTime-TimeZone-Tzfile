@@ -1,3 +1,6 @@
+  * with a version-1 tzfile, treat the last observance as continuing
+    indefinitely, rather than as having no rule for the future
+
   * test POD syntax and coverage, and rename some internal functions to
     satisfy the coverage test
 

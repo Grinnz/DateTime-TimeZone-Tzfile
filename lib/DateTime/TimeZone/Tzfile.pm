@@ -198,7 +198,7 @@ sub new {
 	for(my $i = $leapcnt; $i--; ) { _saferead($fh, 8); }
 	for(my $i = $ttisstdcnt; $i--; ) { _saferead($fh, 1); }
 	for(my $i = $ttisgmtcnt; $i--; ) { _saferead($fh, 1); }
-	my $late_rule = "";
+	my $late_rule;
 	if($fmtversion eq "2") {
 		croak "bad tzfile: wrong magic number"
 			unless _saferead($fh, 4) eq "TZif";
@@ -218,6 +218,7 @@ sub new {
 		for(my $i = $ttisgmtcnt; $i--; ) { _saferead($fh, 1); }
 		croak "bad tzfile: missing newline"
 			unless _saferead($fh, 1) eq "\x0a";
+		$late_rule = "";
 		while(1) {
 			my $c = _saferead($fh, 1);
 			last if $c eq "\x0a";
@@ -258,11 +259,13 @@ sub new {
 			if $obs_type >= $typecnt;
 		$obs_type = $types[$obs_type];
 	}
-	$obs_types[-1] = $late_rule eq "" ? undef : do {
-		require DateTime::TimeZone::SystemV;
-		DateTime::TimeZone::SystemV->VERSION("0.002");
-		DateTime::TimeZone::SystemV->new($late_rule);
-	};
+	if(defined $late_rule) {
+		$obs_types[-1] = $late_rule eq "" ? undef : do {
+			require DateTime::TimeZone::SystemV;
+			DateTime::TimeZone::SystemV->VERSION("0.002");
+			DateTime::TimeZone::SystemV->new($late_rule);
+		};
+	}
 	$self->{trn_times} = \@trn_times;
 	$self->{obs_types} = \@obs_types;
 	$self->{offsets} = [ sort { $a <=> $b } keys %offsets ];
