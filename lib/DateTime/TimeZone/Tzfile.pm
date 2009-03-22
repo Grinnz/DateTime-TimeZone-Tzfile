@@ -44,7 +44,7 @@ use Carp qw(croak);
 use IO::File 1.03;
 use IO::Handle 1.08;
 
-our $VERSION = "0.001";
+our $VERSION = "0.002";
 
 use fields qw(name has_dst trn_times obs_types offsets);
 
@@ -502,7 +502,7 @@ Andrew Main (Zefram) <zefram@fysh.org>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2007 Andrew Main (Zefram) <zefram@fysh.org>
+Copyright (C) 2007, 2009 Andrew Main (Zefram) <zefram@fysh.org>
 
 =head1 LICENSE
 
