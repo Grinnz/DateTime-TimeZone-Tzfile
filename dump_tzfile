@@ -8,8 +8,8 @@ use Date::JD 0.001 qw(rdn_to_cjdn);
 use DateTime::TimeZone::Tzfile;
 
 BEGIN {
-	*fdiv = \&DateTime::TimeZone::Tzfile::fdiv;
-	*fmod = \&DateTime::TimeZone::Tzfile::fmod;
+	*fdiv = \&DateTime::TimeZone::Tzfile::_fdiv;
+	*fmod = \&DateTime::TimeZone::Tzfile::_fmod;
 }
 
 my $tz = DateTime::TimeZone::Tzfile->new($ARGV[0]);
