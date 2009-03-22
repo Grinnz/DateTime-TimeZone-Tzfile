@@ -1,3 +1,6 @@
+  * in documentation, use the term "truth value" instead of the less
+    precise "boolean"
+
 version 0.002; 2009-03-22
 
   * with a version-1 tzfile, treat the last observance as continuing

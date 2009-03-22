@@ -341,7 +341,7 @@ sub name {
 
 =item $tz->has_dst_changes
 
-Returns a boolean indicating whether any of the observances in the file
+Returns a truth value indicating whether any of the observances in the file
 are marked as DST.  These DST flags are potentially arbitrary, and don't
 affect any of the zone's behaviour.
 
@@ -402,7 +402,7 @@ sub offset_for_datetime {
 =item $tz->is_dst_for_datetime(DT)
 
 I<DT> must be a L<DateTime>-compatible object (specifically, it must
-implement the C<utc_rd_values> method).  Returns a boolean indicating
+implement the C<utc_rd_values> method).  Returns a truth value indicating
 whether the timezone's observance at the instant represented by I<DT>
 is marked as DST.  This DST flag is potentially arbitrary, and doesn't
 affect anything else.
