@@ -37,6 +37,7 @@ instances can be used with L<DateTime> objects.
 
 package DateTime::TimeZone::Tzfile;
 
+{ use 5.006; }
 use warnings;
 use strict;
 

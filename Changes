@@ -3,6 +3,8 @@
 
   * abandon use of the "fields" module
 
+  * check for required Perl version at runtime
+
   * remove bogus "exit 0" from Build.PL
 
 version 0.002; 2009-03-22
