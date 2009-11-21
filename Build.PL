@@ -7,6 +7,9 @@ use Module::Build;
 Module::Build->new(
 	module_name => "DateTime::TimeZone::Tzfile",
 	license => "perl",
+	configure_requires => {
+		"Module::Build" => 0,
+	},
 	build_requires => {
 		"IO::File" => "1.03",
 		"Module::Build" => 0,

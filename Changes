@@ -5,6 +5,8 @@
 
   * check for required Perl version at runtime
 
+  * in Build.PL, explicitly declare configure-time requirements
+
   * remove bogus "exit 0" from Build.PL
 
 version 0.002; 2009-03-22
