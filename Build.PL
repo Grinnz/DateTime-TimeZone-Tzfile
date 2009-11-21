@@ -9,6 +9,7 @@ Module::Build->new(
 	license => "perl",
 	configure_requires => {
 		"Module::Build" => 0,
+		"perl" => "5.006",
 	},
 	build_requires => {
 		"IO::File" => "1.03",
