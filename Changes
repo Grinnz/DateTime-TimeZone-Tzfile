@@ -9,6 +9,8 @@
 
   * remove bogus "exit 0" from Build.PL
 
+  * add MYMETA.yml to .cvsignore
+
 version 0.002; 2009-03-22
 
   * with a version-1 tzfile, treat the last observance as continuing
