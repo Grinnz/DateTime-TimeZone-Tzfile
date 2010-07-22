@@ -5,6 +5,8 @@
 
   * check for required Perl version at runtime
 
+  * use full stricture in test suite
+
   * in Build.PL, explicitly declare configure-time requirements
 
   * remove bogus "exit 0" from Build.PL
