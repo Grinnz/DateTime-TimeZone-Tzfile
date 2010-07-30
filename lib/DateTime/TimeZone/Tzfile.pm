@@ -45,7 +45,7 @@ use Carp qw(croak);
 use IO::File 1.03;
 use IO::Handle 1.08;
 
-our $VERSION = "0.002";
+our $VERSION = "0.003";
 
 # _fdiv(A, B), _fmod(A, B): divide A by B, flooring remainder
 #
@@ -489,7 +489,7 @@ Andrew Main (Zefram) <zefram@fysh.org>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2007, 2009 Andrew Main (Zefram) <zefram@fysh.org>
+Copyright (C) 2007, 2009, 2010 Andrew Main (Zefram) <zefram@fysh.org>
 
 =head1 LICENSE
 
