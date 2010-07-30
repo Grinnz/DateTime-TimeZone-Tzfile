@@ -1,3 +1,5 @@
+  * in documentation, correct one use of "filename" to "filehandle"
+
   * in documentation, use the term "truth value" instead of the less
     precise "boolean"
 

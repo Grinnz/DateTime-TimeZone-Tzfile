@@ -95,7 +95,7 @@ any data that follows the timezone data.
 
 =back
 
-Either a filename or filename must be given.  If a timezone name is not
+Either a filename or filehandle must be given.  If a timezone name is not
 given, then the filename is used instead if supplied; a timezone name
 must be given explicitly if no filename is given.
 
