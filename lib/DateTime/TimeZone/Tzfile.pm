@@ -473,13 +473,17 @@ sub offset_for_local_datetime {
 	my($self, $dt) = @_;
 	my($lcl_rdn, $lcl_sod) = $dt->local_rd_values;
 	$lcl_sod = 86399 if $lcl_sod >= 86400;
+	my $seen_undefined;
 	foreach my $offset (@{$self->{offsets}}) {
 		my($utc_rdn, $utc_sod) =
 			_local_to_utc_rdn_sod($lcl_rdn, $lcl_sod, $offset);
 		my $ttype = eval { local $SIG{__DIE__};
 			$self->_type_for_rdn_sod($utc_rdn, $utc_sod);
 		};
-		next unless defined $ttype;
+		unless(defined $ttype) {
+			$seen_undefined = 1;
+			next;
+		}
 		my $local_offset = ref($ttype) eq "ARRAY" ? $ttype->[0] :
 			eval { local $SIG{__DIE__};
 				$ttype->offset_for_local_datetime($dt);
@@ -487,7 +491,8 @@ sub offset_for_local_datetime {
 		return $offset
 			if defined($local_offset) && $local_offset == $offset;
 	}
-	croak "non-existent local time due to offset change";
+	croak "non-existent local time due to ".
+		($seen_undefined ? "zone disuse" : "offset change");
 }
 
 =back

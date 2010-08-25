@@ -7,6 +7,10 @@
     previously the sole criterion, now also require zero offset and
     not DST)
 
+  * when a local time is non-existent due to an undefined observance,
+    give an error message that says so, rather than conflating it with
+    local time being non-existent due to offset changes
+
 version 0.003; 2010-07-30
 
   * in documentation, correct one use of "filename" to "filehandle"
