@@ -148,6 +148,8 @@ sub _read_tm64($) {
 	return [ UNIX_EPOCH_RDN + $d, $th ];
 }
 
+use constant FACTORY_ABBR => "Local time zone must be set--see zic manual page";
+
 sub new {
 	my $class = shift;
 	unshift @_, "filename" if @_ == 1;
@@ -257,6 +259,18 @@ sub new {
 		croak "bad tzfile: invalid local time type index"
 			if $obs_type >= $typecnt;
 		$obs_type = $types[$obs_type];
+	}
+	if(defined($late_rule) && $late_rule eq "<".FACTORY_ABBR.">0" &&
+			defined($obs_types[-1]) && $obs_types[-1]->[0] == 0 &&
+			!$obs_types[-1]->[1] &&
+			$obs_types[-1]->[2] eq FACTORY_ABBR) {
+		# This bizarre timezone abbreviation is used in the Factory
+		# timezone in the Olson database.  It's not valid in a
+		# SysV-style TZ value, because it contains spaces, but zic
+		# puts it into one anyway because the file format demands
+		# it.  DT:TZ:SystemV would object, so as a special
+		# exception we ignore the TZ value in this case.
+		$late_rule = undef;
 	}
 	if(defined $late_rule) {
 		$obs_types[-1] = $late_rule eq "" ? undef : do {

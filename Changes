@@ -1,3 +1,7 @@
+  * for the Olson "Factory" timezone, which has a pseudo-abbreviation
+    containing spaces, don't process the TZ value that it contains,
+    because it's invalid and DateTime::TimeZone::SystemV objects to it
+
 version 0.003; 2010-07-30
 
   * in documentation, correct one use of "filename" to "filehandle"
