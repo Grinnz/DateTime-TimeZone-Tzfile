@@ -9,7 +9,10 @@
 
   * when a local time is non-existent due to an undefined observance,
     give an error message that says so, rather than conflating it with
-    local time being non-existent due to offset changes
+    local time being non-existent due to an offset change
+
+  * test the error message that is given when a local time does not
+    exist due to an offset change
 
 version 0.003; 2010-07-30
 
