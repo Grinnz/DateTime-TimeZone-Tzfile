@@ -2,6 +2,11 @@
     containing spaces, don't process the TZ value that it contains,
     because it's invalid and DateTime::TimeZone::SystemV objects to it
 
+  * tighten the criteria for recognising the special observance that
+    indicates that local time is not defined (abbreviation "zzz" was
+    previously the sole criterion, now also require zero offset and
+    not DST)
+
 version 0.003; 2010-07-30
 
   * in documentation, correct one use of "filename" to "filehandle"

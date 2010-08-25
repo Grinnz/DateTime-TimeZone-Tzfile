@@ -245,7 +245,8 @@ sub new {
 		$first_std_type_index = $i
 			if !defined($first_std_type_index) && !$types[$i]->[1];
 		$self->{has_dst} = 1 if $types[$i]->[1];
-		if($types[$i]->[2] eq "zzz") {
+		if($types[$i]->[0] == 0 && !$types[$i]->[1] &&
+				$types[$i]->[2] eq "zzz") {
 			# "zzz" means the zone is not defined at this time,
 			# due for example to the location being uninhabited
 			$types[$i] = undef;
