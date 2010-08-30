@@ -81,6 +81,16 @@ encoded in the file.  The following attributes may be given:
 Name for the timezone object.  This will be returned by the C<name>
 method described below.
 
+=item B<category>
+
+The string or C<undef> that will be returned by the C<category> method
+described below.  Default C<undef>.
+
+=item B<is_olson>
+
+The truth value that will be returned by the C<is_olson> method described
+below.  Default false.
+
 =item B<filename>
 
 Name of the file from which to read the timezone data.  The filename
@@ -162,6 +172,14 @@ sub new {
 			croak "timezone name specified redundantly"
 				if exists $self->{name};
 			$self->{name} = $value;
+		} elsif($attr eq "category") {
+			croak "category value specified redundantly"
+				if exists $self->{category};
+			$self->{category} = $value;
+		} elsif($attr eq "is_olson") {
+			croak "is_olson flag specified redundantly"
+				if exists $self->{is_olson};
+			$self->{is_olson} = !!$value;
 		} elsif($attr eq "filename") {
 			croak "filename specified redundantly"
 				if defined($filename) || defined($fh);
@@ -178,6 +196,12 @@ sub new {
 	unless(exists $self->{name}) {
 		croak "timezone name not specified" unless defined $filename;
 		$self->{name} = $filename;
+	}
+	unless(exists $self->{category}) {
+		$self->{category} = undef;
+	}
+	unless(exists $self->{is_olson}) {
+		$self->{is_olson} = !!0;
 	}
 	if(defined $filename) {
 		$fh = IO::File->new($filename, "r")
@@ -316,23 +340,28 @@ sub is_utc { 0 }
 
 =item $tz->is_olson
 
-Returns false.  The files interpreted by this class are actually very
-likely to be from the Olson database, but false is returned to indicate
-that the values returned by the C<category> and C<name> methods are not
-as would be expected for an Olson timezone.  This behaviour may change
-in a future version.
+Returns the truth value that was provided to the constructor for this
+purpose, default false.  This nominally indicates whether the timezone
+data is from the Olson database.  The files interpreted by this class
+are very likely to be from the Olson database, but there is no explicit
+indicator for this in the file, so this information must be supplied to
+the constructor if required.
 
 =cut
 
-sub is_olson { 0 }
+sub is_olson { $_[0]->{is_olson} }
 
 =item $tz->category
 
-Returns C<undef>, because the category can't be determined from the file.
+Returns the value that was provided to the constructor for this purpose,
+default C<undef>.  This is intended to indicate the general region
+(continent or ocean) in which a geographical timezone is used, when
+the timezone is named according to the hierarchical scheme of the Olson
+timezone database.
 
 =cut
 
-sub category { undef }
+sub category { $_[0]->{category} }
 
 =item $tz->name
 

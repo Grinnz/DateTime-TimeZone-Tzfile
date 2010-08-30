@@ -7,6 +7,9 @@
     previously the sole criterion, now also require zero offset and
     not DST)
 
+  * allow the ->is_olson and ->category values to be specified to the
+    constructor, instead of having fixed values
+
   * when a local time is non-existent due to an undefined observance,
     give an error message that says so, rather than conflating it with
     local time being non-existent due to an offset change
