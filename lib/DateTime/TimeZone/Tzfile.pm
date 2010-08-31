@@ -530,6 +530,9 @@ sub offset_for_local_datetime {
 
 L<DateTime>,
 L<DateTime::TimeZone>,
+L<DateTime::TimeZone::Olson>,
+L<Time::OlsonTZ::Data>,
+L<Time::OlsonTZ::Download>,
 L<tzfile(5)>
 
 =head1 AUTHOR
