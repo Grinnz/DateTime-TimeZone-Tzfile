@@ -16,6 +16,9 @@ version 0.004; 2010-08-31
     give an error message that says so, rather than conflating it with
     local time being non-existent due to an offset change
 
+  * add DateTime::TimeZone::Olson, Time::OlsonTZ::Data, and
+    Time::OlsonTZ::Download to the "see also" list
+
   * test the error message that is given when a local time does not
     exist due to an offset change
 
