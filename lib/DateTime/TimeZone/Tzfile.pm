@@ -204,7 +204,7 @@ sub new {
 		$self->{is_olson} = !!0;
 	}
 	if(defined $filename) {
-		$fh = IO::File->new($filename, "r")
+		($fh = IO::File->new($filename, "r")) && $fh->binmode
 			or croak "can't read $filename: $!";
 	}
 	croak "bad tzfile: wrong magic number"

@@ -8,7 +8,11 @@ require_ok "DateTime::TimeZone::Tzfile";
 
 my $tz;
 
-sub new_fh() { IO::File->new("t/london.tz") or die $! }
+sub new_fh() {
+	my $fh;
+	($fh = IO::File->new("t/london.tz")) && $fh->binmode or die $!;
+	return $fh;
+}
 
 $tz = DateTime::TimeZone::Tzfile->new("t/london.tz");
 ok $tz;

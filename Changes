@@ -1,3 +1,5 @@
+  * bugfix: read tzfiles in binary mode
+
   * include META.json in distribution
 
   * add MYMETA.json to .cvsignore
