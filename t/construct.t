@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-use IO::File 1.03;
+use IO::File 1.13;
 use Test::More tests => 21;
 
 require_ok "DateTime::TimeZone::Tzfile";
