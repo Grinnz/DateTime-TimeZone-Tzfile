@@ -26,6 +26,7 @@ Module::Build->new(
 		"DateTime::TimeZone::SystemV" => "0.002",
 		"IO::File" => "1.13",
 		"IO::Handle" => "1.08",
+		"Params::Classify" => 0,
 		"constant" => 0,
 		"integer" => 0,
 		"perl" => "5.006",

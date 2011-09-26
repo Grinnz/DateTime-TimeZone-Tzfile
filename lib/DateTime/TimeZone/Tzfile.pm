@@ -44,6 +44,7 @@ use strict;
 use Carp qw(croak);
 use IO::File 1.13;
 use IO::Handle 1.08;
+use Params::Classify 0.000 qw(is_undef is_string);
 
 our $VERSION = "0.005";
 
@@ -171,10 +172,14 @@ sub new {
 		if($attr eq "name") {
 			croak "timezone name specified redundantly"
 				if exists $self->{name};
+			croak "timezone name must be a string"
+				unless is_string($value);
 			$self->{name} = $value;
 		} elsif($attr eq "category") {
 			croak "category value specified redundantly"
 				if exists $self->{category};
+			croak "category value must be a string or undef"
+				unless is_undef($value) || is_string($value);
 			$self->{category} = $value;
 		} elsif($attr eq "is_olson") {
 			croak "is_olson flag specified redundantly"
@@ -183,6 +188,8 @@ sub new {
 		} elsif($attr eq "filename") {
 			croak "filename specified redundantly"
 				if defined($filename) || defined($fh);
+			croak "filename must be a string"
+				unless is_string($value);
 			$filename = $value;
 		} elsif($attr eq "filehandle") {
 			croak "filehandle specified redundantly"

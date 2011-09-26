@@ -1,3 +1,5 @@
+  * check argument types in constructor
+
 version 0.005; 2011-04-05
 
   * bugfix: read tzfiles in binary mode
