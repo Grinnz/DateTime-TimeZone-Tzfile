@@ -14,6 +14,8 @@ Module::Build->new(
 		"warnings" => 0,
 	},
 	build_requires => {
+		"Date::ISO8601" => 0,
+		"Date::JD" => "0.005",
 		"IO::File" => "1.13",
 		"Module::Build" => 0,
 		"Test::More" => 0,

@@ -1,5 +1,7 @@
   * check argument types in constructor
 
+  * make test suite work even if DateTime is not available
+
 version 0.005; 2011-04-05
 
   * bugfix: read tzfiles in binary mode
