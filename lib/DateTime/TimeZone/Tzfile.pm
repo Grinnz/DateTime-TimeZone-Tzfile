@@ -82,7 +82,7 @@ encoded in the file.  The following attributes may be given:
 =item B<name>
 
 Name for the timezone object.  This will be returned by the C<name>
-method described below.
+method described below, and will be included in certain error messages.
 
 =item B<category>
 
