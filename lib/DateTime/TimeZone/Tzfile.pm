@@ -48,7 +48,7 @@ use IO::File 1.13;
 use IO::Handle 1.08;
 use Params::Classify 0.000 qw(is_undef is_string);
 
-our $VERSION = "0.005";
+our $VERSION = "0.006";
 
 # _fdiv(A, B), _fmod(A, B): divide A by B, flooring remainder
 #
