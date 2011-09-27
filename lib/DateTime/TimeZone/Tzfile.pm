@@ -42,6 +42,8 @@ use warnings;
 use strict;
 
 use Carp qw(croak);
+use Date::ISO8601 0.000 qw(present_ymd);
+use Date::JD 0.005 qw(rdn_to_cjdnn);
 use IO::File 1.13;
 use IO::Handle 1.08;
 use Params::Classify 0.000 qw(is_undef is_string);
@@ -414,7 +416,15 @@ sub _type_for_rdn_sod {
 		}
 	}
 	my $type = $self->{obs_types}->[$lo];
-	croak "local time not defined for this time" unless defined $type;
+	unless(defined $type) {
+		croak "time @{[present_ymd(rdn_to_cjdnn($utc_rdn))]}T@{[
+			sprintf(q(%02d:%02d:%02d),
+				int($utc_sod/3600),
+				int($utc_sod/60)%60,
+				$utc_sod%60)
+		]}Z is not represented in the @{[$self->{name}]} timezone ".
+			"due to zone disuse";
+	}
 	return $type;
 }
 
@@ -527,8 +537,13 @@ sub offset_for_local_datetime {
 		return $offset
 			if defined($local_offset) && $local_offset == $offset;
 	}
-	croak "non-existent local time due to ".
-		($seen_undefined ? "zone disuse" : "offset change");
+	croak "local time @{[present_ymd(rdn_to_cjdnn($lcl_rdn))]}T@{[
+		sprintf(q(%02d:%02d:%02d),
+			int($lcl_sod/3600),
+			int($lcl_sod/60)%60,
+			$lcl_sod%60)
+	]} does not exist in the @{[$self->{name}]} timezone due to ".
+		"@{[$seen_undefined ? q(zone disuse) : q(offset change)]}";
 }
 
 =back

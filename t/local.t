@@ -28,8 +28,9 @@ sub try($$) {
 	my $dt = FakeLocalDateTime->new("$1", "$2", "$3", "$4", "$5", "$6");
 	is eval { $tz->offset_for_local_datetime($dt) }, $offset,
 		"offset for $timespec";
-	if(!defined($offset)) {
-		like $@, qr/\Anon-existent local time due to offset change/;
+	unless(defined $offset) {
+		like $@, qr/local time \Q$timespec\E does not exist\b/,
+			"error message for $timespec";
 	}
 }
 
