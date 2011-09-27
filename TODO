@@ -5,3 +5,5 @@
 * include the local time and zone name in error message about non-existent local time (matching DT:TZ:SystemV)
 
 * better criterion for zone disuse error message
+
+* check interoperability with DateTime's {utc,local}_rd_values around leap seconds
