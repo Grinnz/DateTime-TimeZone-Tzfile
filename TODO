@@ -1,5 +1,7 @@
 * distinguish between zone disuse and zone having unknown behaviour
 
+* handle zone disuse in extension rule
+
 * better criterion for zone disuse error message
 
 * check interoperability with DateTime's {utc,local}_rd_values around leap seconds
