@@ -2,6 +2,9 @@
 
   * test more error cases
 
+  * for CRLF test, use a smaller tzfile that tickles the same potential
+    bug
+
   * give test tzfiles appropriately capitalised names
 
   * convert .cvsignore to .gitignore

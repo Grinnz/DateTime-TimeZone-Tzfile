@@ -7,8 +7,8 @@ META.yml
 Makefile.PL
 README
 lib/DateTime/TimeZone/Tzfile.pm
-t/Cairo.tz
 t/Davis.tz
+t/Kaliningrad.tz
 t/London.tz
 t/construct.t
 t/crlf.t
