@@ -1,3 +1,1 @@
-* better criterion for zone disuse error message
-
 * check interoperability with DateTime's {utc,local}_rd_values around leap seconds
