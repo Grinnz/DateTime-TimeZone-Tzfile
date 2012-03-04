@@ -5,6 +5,8 @@
 
   * test more error cases
 
+  * test behaviour around leap seconds
+
   * factor out date/time presentation code used for error messages
 
   * for CRLF test, use a smaller tzfile that tickles the same potential

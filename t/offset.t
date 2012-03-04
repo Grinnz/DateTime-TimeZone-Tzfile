@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 1618;
+use Test::More tests => 1693;
 
 {
 	package FakeUtcDateTime;
@@ -610,5 +610,34 @@ try "1919-10-26T06:00:00Z", 0, -18000, "EST";
 try "1936-03-04T04:59:59Z", 0, -18000, "EST";
 try "1936-03-04T05:00:00Z", "zone disuse";
 try "1937-01-01T12:00:00Z", "zone disuse";
+
+# leap seconds, including changes occurring immediately after a leap second
+# (these are not real leap second dates)
+$tz = DateTime::TimeZone::Tzfile->new("t/Kaliningrad.tz");
+try "2005-02-01T12:00:00Z", 0,  +7200, "EET";
+try "2005-02-01T23:59:59Z", 0,  +7200, "EET";
+try "2005-02-01T23:59:60Z", 0,  +7200, "EET";
+try "2005-02-02T00:00:00Z", 0,  +7200, "EET";
+try "2005-02-02T12:00:00Z", 0,  +7200, "EET";
+try "2005-03-26T12:00:00Z", 0,  +7200, "EET";
+try "2005-03-26T23:59:59Z", 0,  +7200, "EET";
+try "2005-03-26T23:59:60Z", 0,  +7200, "EET";
+try "2005-03-27T00:00:00Z", 1, +10800, "EEST";
+try "2005-03-27T12:00:00Z", 1, +10800, "EEST";
+try "2005-04-01T12:00:00Z", 1, +10800, "EEST";
+try "2005-04-01T23:59:59Z", 1, +10800, "EEST";
+try "2005-04-01T23:59:60Z", 1, +10800, "EEST";
+try "2005-04-02T00:00:00Z", 1, +10800, "EEST";
+try "2005-04-02T12:00:00Z", 1, +10800, "EEST";
+try "2005-10-29T12:00:00Z", 1, +10800, "EEST";
+try "2005-10-29T23:59:59Z", 1, +10800, "EEST";
+try "2005-10-29T23:59:60Z", 1, +10800, "EEST";
+try "2005-10-30T00:00:00Z", 0,  +7200, "EET";
+try "2005-10-30T12:00:00Z", 0,  +7200, "EET";
+try "2005-12-01T12:00:00Z", 0,  +7200, "EET";
+try "2005-12-01T23:59:59Z", 0,  +7200, "EET";
+try "2005-12-01T23:59:60Z", 0,  +7200, "EET";
+try "2005-12-02T00:00:00Z", 0,  +7200, "EET";
+try "2005-12-02T12:00:00Z", 0,  +7200, "EET";
 
 1;
