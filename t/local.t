@@ -41,7 +41,7 @@ sub try($$) {
 	}
 }
 
-$tz = DateTime::TimeZone::Tzfile->new("t/london.tz");
+$tz = DateTime::TimeZone::Tzfile->new("t/London.tz");
 try "1800-01-01T00:00:00", -75;
 try "1920-03-28T01:59:59", +0;
 try "1920-03-28T02:00:00", "offset change";
@@ -64,7 +64,7 @@ try "2039-10-30T01:00:00", +0;
 try "2039-10-30T01:59:59", +0;
 try "2039-10-30T02:00:00", +0;
 
-$tz = DateTime::TimeZone::Tzfile->new("t/davis.tz");
+$tz = DateTime::TimeZone::Tzfile->new("t/Davis.tz");
 try "1953-07-01T12:00:00", "zone disuse";
 try "1957-01-13T06:59:59", "zone disuse";
 try "1957-01-13T07:00:00", +25200;

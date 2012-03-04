@@ -10,25 +10,25 @@ my $tz;
 
 sub new_fh() {
 	my $fh;
-	($fh = IO::File->new("t/london.tz")) && $fh->binmode or die $!;
+	($fh = IO::File->new("t/London.tz")) && $fh->binmode or die $!;
 	return $fh;
 }
 
-$tz = DateTime::TimeZone::Tzfile->new("t/london.tz");
+$tz = DateTime::TimeZone::Tzfile->new("t/London.tz");
 ok $tz;
-is $tz->name, "t/london.tz";
+is $tz->name, "t/London.tz";
 
-$tz = DateTime::TimeZone::Tzfile->new(filename => "t/london.tz");
+$tz = DateTime::TimeZone::Tzfile->new(filename => "t/London.tz");
 ok $tz;
-is $tz->name, "t/london.tz";
+is $tz->name, "t/London.tz";
 
-$tz = DateTime::TimeZone::Tzfile->new(filename => "t/london.tz",
+$tz = DateTime::TimeZone::Tzfile->new(filename => "t/London.tz",
 	name => "foobar");
 ok $tz;
 is $tz->name, "foobar";
 
 $tz = DateTime::TimeZone::Tzfile->new(name => "foobar",
-	filename => "t/london.tz");
+	filename => "t/London.tz");
 ok $tz;
 is $tz->name, "foobar";
 
@@ -68,19 +68,19 @@ eval { DateTime::TimeZone::Tzfile->new(filehandle => new_fh()); };
 like $@, qr/\Atimezone name not specified\b/;
 
 eval {
-	DateTime::TimeZone::Tzfile->new(filename => "t/london.tz",
-		filename => "t/london.tz");
+	DateTime::TimeZone::Tzfile->new(filename => "t/London.tz",
+		filename => "t/London.tz");
 };
 like $@, qr/\Afilename specified redundantly\b/;
 
 eval {
 	DateTime::TimeZone::Tzfile->new(filehandle => new_fh(),
-		filename => "t/london.tz");
+		filename => "t/London.tz");
 };
 like $@, qr/\Afilename specified redundantly\b/;
 
 eval {
-	DateTime::TimeZone::Tzfile->new(filename => "t/london.tz",
+	DateTime::TimeZone::Tzfile->new(filename => "t/London.tz",
 		filehandle => new_fh());
 };
 like $@, qr/\Afilehandle specified redundantly\b/;

@@ -5,7 +5,7 @@ use Test::More tests => 2;
 
 require_ok "DateTime::TimeZone::Tzfile";
 
-my $tz = DateTime::TimeZone::Tzfile->new("t/cairo.tz");
+my $tz = DateTime::TimeZone::Tzfile->new("t/Cairo.tz");
 ok 1;
 
 1;

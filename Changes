@@ -2,6 +2,8 @@
 
   * test more error cases
 
+  * give test tzfiles appropriately capitalised names
+
   * convert .cvsignore to .gitignore
 
 version 0.006; 2011-09-27
