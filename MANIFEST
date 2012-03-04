@@ -10,6 +10,7 @@ lib/DateTime/TimeZone/Tzfile.pm
 t/Davis.tz
 t/Kaliningrad.tz
 t/London.tz
+t/Loyston.tz
 t/San_Luis.tz
 t/construct.t
 t/crlf.t

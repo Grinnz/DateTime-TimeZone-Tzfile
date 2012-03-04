@@ -307,11 +307,17 @@ sub new {
 		$late_rule = undef;
 	}
 	if(defined $late_rule) {
-		$obs_types[-1] = $late_rule eq "" ? "missing data" : do {
+		if($late_rule eq "") {
+			$obs_types[-1] = "missing data";
+		} elsif($late_rule =~
+				/\A(?:zzz|<zzz>)[-+]?00?(?::00(?::00)?)?\z/) {
+			$obs_types[-1] = "zone disuse";
+		} else {
 			require DateTime::TimeZone::SystemV;
 			DateTime::TimeZone::SystemV->VERSION("0.002");
-			DateTime::TimeZone::SystemV->new($late_rule);
-		};
+			$obs_types[-1] =
+				DateTime::TimeZone::SystemV->new($late_rule);
+		}
 	}
 	$self->{trn_times} = \@trn_times;
 	$self->{obs_types} = \@obs_types;

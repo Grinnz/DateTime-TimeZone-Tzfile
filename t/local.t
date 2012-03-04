@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 75;
+use Test::More tests => 113;
 
 {
 	package FakeLocalDateTime;
@@ -109,5 +109,39 @@ try "2009-06-01T12:00:00", -14400;
 try "2009-10-10T23:59:59", -14400;
 try "2009-10-11T00:00:00", "missing data";
 try "2010-01-01T12:00:00", "missing data";
+
+# Loyston was settled in the early 19th century and ultimately abandoned
+# in 1936 to make way for the Norris Lake.  This tzfile is not from the
+# Olson database.  It's here to test the handling of a presently-disused
+# zone.
+$tz = DateTime::TimeZone::Tzfile->new("t/Loyston.tz");
+try "1799-01-01T12:00:00", "zone disuse";
+try "1799-12-31T18:24:15", "zone disuse";
+try "1799-12-31T18:24:16", -20144;
+try "1840-01-01T12:00:00", -20144;
+try "1883-11-18T11:24:15", -20144;
+try "1883-11-18T11:24:16", "offset change";
+try "1883-11-18T11:59:59", "offset change";
+try "1883-11-18T12:00:00", -18000;
+try "1900-01-01T12:00:00", -18000;
+try "1918-03-31T01:59:59", -18000;
+try "1918-03-31T02:00:00", "offset change";
+try "1918-03-31T02:59:59", "offset change";
+try "1918-03-31T03:00:00", -14400;
+try "1918-07-01T12:00:00", -14400;
+try "1918-10-27T00:59:59", -14400;
+try "1918-10-27T01:00:00", -18000;
+try "1919-01-01T12:00:00", -18000;
+try "1919-03-30T01:59:59", -18000;
+try "1919-03-30T02:00:00", "offset change";
+try "1919-03-30T02:59:59", "offset change";
+try "1919-03-30T03:00:00", -14400;
+try "1919-07-01T12:00:00", -14400;
+try "1919-10-26T00:59:59", -14400;
+try "1919-10-26T01:00:00", -18000;
+try "1930-01-01T12:00:00", -18000;
+try "1936-03-03T23:59:59", -18000;
+try "1936-03-04T00:00:00", "zone disuse";
+try "1937-01-01T12:00:00", "zone disuse";
 
 1;

@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 1570;
+use Test::More tests => 1618;
 
 {
 	package FakeUtcDateTime;
@@ -588,5 +588,27 @@ try "2009-03-08T03:00:00Z", 0, -14400, "WART";
 try "2009-10-11T03:59:59Z", 0, -14400, "WART";
 try "2009-10-11T04:00:00Z", "missing data";
 try "2010-01-01T12:00:00Z", "missing data";
+
+# Loyston was settled in the early 19th century and ultimately abandoned
+# in 1936 to make way for the Norris Lake.  This tzfile is not from the
+# Olson database.  It's here to test the handling of a presently-disused
+# zone.
+$tz = DateTime::TimeZone::Tzfile->new("t/Loyston.tz");
+try "1799-01-01T12:00:00Z", "zone disuse";
+try "1799-12-31T23:59:59Z", "zone disuse";
+try "1800-01-01T00:00:00Z", 0, -20144, "LMT";
+try "1883-11-18T16:59:59Z", 0, -20144, "LMT";
+try "1883-11-18T17:00:00Z", 0, -18000, "EST";
+try "1918-03-31T06:59:59Z", 0, -18000, "EST";
+try "1918-03-31T07:00:00Z", 1, -14400, "EDT";
+try "1918-10-27T05:59:59Z", 1, -14400, "EDT";
+try "1918-10-27T06:00:00Z", 0, -18000, "EST";
+try "1919-03-30T06:59:59Z", 0, -18000, "EST";
+try "1919-03-30T07:00:00Z", 1, -14400, "EDT";
+try "1919-10-26T05:59:59Z", 1, -14400, "EDT";
+try "1919-10-26T06:00:00Z", 0, -18000, "EST";
+try "1936-03-04T04:59:59Z", 0, -18000, "EST";
+try "1936-03-04T05:00:00Z", "zone disuse";
+try "1937-01-01T12:00:00Z", "zone disuse";
 
 1;

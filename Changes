@@ -1,8 +1,11 @@
+  * bugfix: recognise zone disuse indicator if it comes in the form of
+    the POSIX-TZ extension rule
+
   * distinguish between zone disuse and missing data
 
-  * factor out date/time presentation code used for error messages
-
   * test more error cases
+
+  * factor out date/time presentation code used for error messages
 
   * for CRLF test, use a smaller tzfile that tickles the same potential
     bug
