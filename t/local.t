@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 53;
+use Test::More tests => 75;
 
 {
 	package FakeLocalDateTime;
@@ -84,5 +84,30 @@ try "2010-03-11T01:00:00", "offset change";
 try "2010-03-11T02:59:59", "offset change";
 try "2010-03-11T03:00:00", +25200;
 try "2011-01-01T12:00:00", +25200;
+
+# This version of San_Luis.tz has no POSIX-TZ extension rule, because
+# the source data ends with an indefinite-future observance that is on
+# DST, and that can't be expressed in a POSIX-TZ recipe.  The correct
+# interpretation of the tzfile is that the zone behaviour is unknown
+# after the final transition time.
+$tz = DateTime::TimeZone::Tzfile->new("t/San_Luis.tz");
+try "2008-01-01T12:00:00", -7200;
+try "2008-01-20T22:59:59", -7200;
+try "2008-01-20T23:00:00", -10800;
+try "2008-02-01T12:00:00", -10800;
+try "2008-03-08T22:59:59", -10800;
+try "2008-03-08T23:00:00", -14400;
+try "2008-06-01T12:00:00", -14400;
+try "2008-10-11T23:59:59", -14400;
+try "2008-10-12T00:00:00", "offset change";
+try "2008-10-12T00:59:59", "offset change";
+try "2008-10-12T01:00:00", -10800;
+try "2009-01-01T12:00:00", -10800;
+try "2009-03-07T22:59:59", -10800;
+try "2009-03-07T23:00:00", -14400;
+try "2009-06-01T12:00:00", -14400;
+try "2009-10-10T23:59:59", -14400;
+try "2009-10-11T00:00:00", "missing data";
+try "2010-01-01T12:00:00", "missing data";
 
 1;

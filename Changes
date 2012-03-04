@@ -1,3 +1,5 @@
+  * distinguish between zone disuse and missing data
+
   * factor out date/time presentation code used for error messages
 
   * test more error cases

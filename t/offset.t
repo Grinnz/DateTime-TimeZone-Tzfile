@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 1534;
+use Test::More tests => 1570;
 
 {
 	package FakeUtcDateTime;
@@ -569,5 +569,24 @@ try "2010-01-01T12:00:00Z", 0, +18000, "DAVT";
 try "2010-03-10T19:59:59Z", 0, +18000, "DAVT";
 try "2010-03-10T20:00:00Z", 0, +25200, "DAVT";
 try "2011-01-01T12:00:00Z", 0, +25200, "DAVT";
+
+# This version of San_Luis.tz has no POSIX-TZ extension rule, because
+# the source data ends with an indefinite-future observance that is on
+# DST, and that can't be expressed in a POSIX-TZ recipe.  The correct
+# interpretation of the tzfile is that the zone behaviour is unknown
+# after the final transition time.
+$tz = DateTime::TimeZone::Tzfile->new("t/San_Luis.tz");
+try "2008-01-01T12:00:00Z", 1,  -7200, "ARST";
+try "2008-01-21T01:59:59Z", 1,  -7200, "ARST";
+try "2008-01-21T02:00:00Z", 1, -10800, "WARST";
+try "2008-03-09T02:59:59Z", 1, -10800, "WARST";
+try "2008-03-09T03:00:00Z", 0, -14400, "WART";
+try "2008-10-12T03:59:59Z", 0, -14400, "WART";
+try "2008-10-12T04:00:00Z", 1, -10800, "WARST";
+try "2009-03-08T02:59:59Z", 1, -10800, "WARST";
+try "2009-03-08T03:00:00Z", 0, -14400, "WART";
+try "2009-10-11T03:59:59Z", 0, -14400, "WART";
+try "2009-10-11T04:00:00Z", "missing data";
+try "2010-01-01T12:00:00Z", "missing data";
 
 1;

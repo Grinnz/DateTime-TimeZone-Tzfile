@@ -46,7 +46,7 @@ use Date::ISO8601 0.000 qw(present_ymd);
 use Date::JD 0.005 qw(rdn_to_cjdnn);
 use IO::File 1.13;
 use IO::Handle 1.08;
-use Params::Classify 0.000 qw(is_undef is_string);
+use Params::Classify 0.000 qw(is_undef is_string is_ref);
 
 our $VERSION = "0.006";
 
@@ -282,7 +282,7 @@ sub new {
 				$types[$i]->[2] eq "zzz") {
 			# "zzz" means the zone is not defined at this time,
 			# due for example to the location being uninhabited
-			$types[$i] = undef;
+			$types[$i] = "zone disuse";
 		} else {
 			$offsets{$types[$i]->[0]} = undef;
 		}
@@ -307,7 +307,7 @@ sub new {
 		$late_rule = undef;
 	}
 	if(defined $late_rule) {
-		$obs_types[-1] = $late_rule eq "" ? undef : do {
+		$obs_types[-1] = $late_rule eq "" ? "missing data" : do {
 			require DateTime::TimeZone::SystemV;
 			DateTime::TimeZone::SystemV->VERSION("0.002");
 			DateTime::TimeZone::SystemV->new($late_rule);
@@ -422,21 +422,21 @@ sub _type_for_rdn_sod {
 			$lo = $try + 1;
 		}
 	}
-	my $type = $self->{obs_types}->[$lo];
-	unless(defined $type) {
-		croak "time @{[_present_rdn_sod($utc_rdn, $utc_sod)]}Z ".
-			"is not represented ".
-			"in the @{[$self->{name}]} timezone ".
-			"due to zone disuse";
-	}
-	return $type;
+	return $self->{obs_types}->[$lo];
 }
 
 sub _type_for_datetime {
 	my($self, $dt) = @_;
 	my($utc_rdn, $utc_sod) = $dt->utc_rd_values;
 	$utc_sod = 86399 if $utc_sod >= 86400;
-	return $self->_type_for_rdn_sod($utc_rdn, $utc_sod);
+	my $type = $self->_type_for_rdn_sod($utc_rdn, $utc_sod);
+	if(is_string($type)) {
+		croak "time @{[_present_rdn_sod($utc_rdn, $utc_sod)]}Z ".
+			"is not represented ".
+			"in the @{[$self->{name}]} timezone ".
+			"due to $type";
+	}
+	return $type;
 }
 
 =item $tz->offset_for_datetime(DT)
@@ -450,7 +450,7 @@ is in effect at the instant represented by I<DT>, in seconds.
 sub offset_for_datetime {
 	my($self, $dt) = @_;
 	my $type = $self->_type_for_datetime($dt);
-	return ref($type) eq "ARRAY" ? $type->[0] :
+	return is_ref($type, "ARRAY") ? $type->[0] :
 		$type->offset_for_datetime($dt);
 }
 
@@ -467,7 +467,7 @@ affect anything else.
 sub is_dst_for_datetime {
 	my($self, $dt) = @_;
 	my $type = $self->_type_for_datetime($dt);
-	return ref($type) eq "ARRAY" ? $type->[1] :
+	return is_ref($type, "ARRAY") ? $type->[1] :
 		$type->is_dst_for_datetime($dt);
 }
 
@@ -484,7 +484,7 @@ either the timezone or the offset.
 sub short_name_for_datetime {
 	my($self, $dt) = @_;
 	my $type = $self->_type_for_datetime($dt);
-	return ref($type) eq "ARRAY" ? $type->[2] :
+	return is_ref($type, "ARRAY") ? $type->[2] :
 		$type->short_name_for_datetime($dt);
 }
 
@@ -523,28 +523,33 @@ sub offset_for_local_datetime {
 	my($self, $dt) = @_;
 	my($lcl_rdn, $lcl_sod) = $dt->local_rd_values;
 	$lcl_sod = 86399 if $lcl_sod >= 86400;
-	my $seen_undefined;
+	my %seen_error;
 	foreach my $offset (@{$self->{offsets}}) {
 		my($utc_rdn, $utc_sod) =
 			_local_to_utc_rdn_sod($lcl_rdn, $lcl_sod, $offset);
-		my $ttype = eval { local $SIG{__DIE__};
-			$self->_type_for_rdn_sod($utc_rdn, $utc_sod);
-		};
-		unless(defined $ttype) {
-			$seen_undefined = 1;
+		my $ttype = $self->_type_for_rdn_sod($utc_rdn, $utc_sod);
+		if(is_string($ttype)) {
+			$seen_error{$ttype} = undef;
 			next;
 		}
-		my $local_offset = ref($ttype) eq "ARRAY" ? $ttype->[0] :
+		my $local_offset = is_ref($ttype, "ARRAY") ? $ttype->[0] :
 			eval { local $SIG{__DIE__};
 				$ttype->offset_for_local_datetime($dt);
 			};
 		return $offset
 			if defined($local_offset) && $local_offset == $offset;
 	}
+	my $error;
+	foreach("zone disuse", "missing data") {
+		if(exists $seen_error{$_}) {
+			$error = $_;
+			last;
+		}
+	}
+	$error ||= "offset change";
 	croak "local time @{[_present_rdn_sod($lcl_rdn, $lcl_sod)]} ".
 		"does not exist in the @{[$self->{name}]} timezone ".
-		"due to ".
-		"@{[$seen_undefined ? q(zone disuse) : q(offset change)]}";
+		"due to $error";
 }
 
 =back
