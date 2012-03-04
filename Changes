@@ -1,3 +1,5 @@
+  * factor out date/time presentation code used for error messages
+
   * convert .cvsignore to .gitignore
 
 version 0.006; 2011-09-27

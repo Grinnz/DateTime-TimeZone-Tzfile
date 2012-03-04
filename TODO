@@ -1,7 +1,5 @@
 * distinguish between zone disuse and zone having unknown behaviour
 
-* factor out presentation of date/time for error messages
-
 * handle zone disuse in extension rule
 
 * better criterion for zone disuse error message

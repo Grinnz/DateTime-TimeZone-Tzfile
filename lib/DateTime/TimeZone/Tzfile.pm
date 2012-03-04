@@ -319,6 +319,13 @@ sub new {
 	return $self;
 }
 
+sub _present_rdn_sod($$) {
+	my($rdn, $sod) = @_;
+	return sprintf("%sT%02d:%02d:%02d",
+		present_ymd(rdn_to_cjdnn($rdn)),
+		int($sod/3600), int($sod/60)%60, $sod%60);
+}
+
 =back
 
 =head1 METHODS
@@ -417,12 +424,9 @@ sub _type_for_rdn_sod {
 	}
 	my $type = $self->{obs_types}->[$lo];
 	unless(defined $type) {
-		croak "time @{[present_ymd(rdn_to_cjdnn($utc_rdn))]}T@{[
-			sprintf(q(%02d:%02d:%02d),
-				int($utc_sod/3600),
-				int($utc_sod/60)%60,
-				$utc_sod%60)
-		]}Z is not represented in the @{[$self->{name}]} timezone ".
+		croak "time @{[_present_rdn_sod($utc_rdn, $utc_sod)]}Z ".
+			"is not represented ".
+			"in the @{[$self->{name}]} timezone ".
 			"due to zone disuse";
 	}
 	return $type;
@@ -537,12 +541,9 @@ sub offset_for_local_datetime {
 		return $offset
 			if defined($local_offset) && $local_offset == $offset;
 	}
-	croak "local time @{[present_ymd(rdn_to_cjdnn($lcl_rdn))]}T@{[
-		sprintf(q(%02d:%02d:%02d),
-			int($lcl_sod/3600),
-			int($lcl_sod/60)%60,
-			$lcl_sod%60)
-	]} does not exist in the @{[$self->{name}]} timezone due to ".
+	croak "local time @{[_present_rdn_sod($lcl_rdn, $lcl_sod)]} ".
+		"does not exist in the @{[$self->{name}]} timezone ".
+		"due to ".
 		"@{[$seen_undefined ? q(zone disuse) : q(offset change)]}";
 }
 
