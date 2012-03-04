@@ -2,7 +2,7 @@ use warnings;
 use strict;
 
 use IO::File 1.13;
-use Test::More tests => 32;
+use Test::More tests => 36;
 
 require_ok "DateTime::TimeZone::Tzfile";
 
@@ -38,6 +38,11 @@ ok $tz;
 is $tz->name, "foobar";
 ok $fh->eof;
 
+$fh = new_fh();
+{ local $/ = \1; defined $fh->getline or die "read error: $!"; }
+eval { DateTime::TimeZone::Tzfile->new(name => "foobar", filehandle => $fh); };
+like $@, qr/\Abad tzfile: wrong magic number\b/;
+
 eval { DateTime::TimeZone::Tzfile->new(); };
 like $@, qr/\Afile not specified\b/;
 
@@ -49,6 +54,15 @@ like $@, qr/\Aunrecognised attribute\b/;
 
 eval { DateTime::TimeZone::Tzfile->new(name => "foobar", name => "quux"); };
 like $@, qr/\Atimezone name specified redundantly\b/;
+
+eval {
+	DateTime::TimeZone::Tzfile->new(category => "foobar",
+		category => "quux");
+};
+like $@, qr/\Acategory value specified redundantly\b/;
+
+eval { DateTime::TimeZone::Tzfile->new(is_olson => 1, is_olson => 1); };
+like $@, qr/\Ais_olson flag specified redundantly\b/;
 
 eval { DateTime::TimeZone::Tzfile->new(filehandle => new_fh()); };
 like $@, qr/\Atimezone name not specified\b/;
@@ -92,5 +106,8 @@ foreach(
 	eval { DateTime::TimeZone::Tzfile->new(filename => $_) };
 	like $@, qr/\Afilename must be a string\b/;
 }
+
+eval { DateTime::TimeZone::Tzfile->new(filename => "t/notexist.tz"); };
+like $@, qr#\Acan't read t/notexist\.tz: #;
 
 1;
