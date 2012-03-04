@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 1486;
+use Test::More tests => 1516;
 
 {
 	package FakeUtcDateTime;
@@ -21,14 +21,37 @@ require_ok "DateTime::TimeZone::Tzfile";
 
 my $tz;
 
-sub try($$$$) {
+sub try($$;$$) {
 	my($timespec, $is_dst, $offset, $abbrev) = @_;
 	$timespec =~ /\A([0-9]{4})-([0-9]{2})-([0-9]{2})T
 			([0-9]{2}):([0-9]{2}):([0-9]{2})Z\z/x or die;
 	my $dt = FakeUtcDateTime->new("$1", "$2", "$3", "$4", "$5", "$6");
-	is !!$tz->is_dst_for_datetime($dt), !!$is_dst, "is DST for $timespec";
-	is $tz->offset_for_datetime($dt), $offset, "offset for $timespec";
-	is $tz->short_name_for_datetime($dt), $abbrev, "abbrev for $timespec";
+	my $errcond;
+	unless($is_dst =~ /\A[01]\z/) {
+		$errcond = $is_dst;
+		$is_dst = undef;
+	}
+	if(defined $is_dst) {
+		is !!$tz->is_dst_for_datetime($dt), !!$is_dst,
+			"is DST for $timespec";
+		is $tz->offset_for_datetime($dt), $offset,
+			"offset for $timespec";
+		is $tz->short_name_for_datetime($dt), $abbrev,
+			"abbrev for $timespec";
+	} else {
+		foreach my $method (qw(
+			is_dst_for_datetime
+			offset_for_datetime
+			short_name_for_datetime
+		)) {
+			eval { $tz->$method($dt) };
+			like $@, qr#\A
+				time\ \Q$timespec\E\ is\ not\ represented
+				\ in\ the\ [!-~]+\ timezone
+				\ due\ to\ \Q$errcond\E
+			\b#x, "$method error message for $timespec";
+		}
+	}
 }
 
 $tz = DateTime::TimeZone::Tzfile->new("t/london.tz");
@@ -527,5 +550,17 @@ try "2039-03-27T00:59:59Z", 0,     +0, "GMT";
 try "2039-03-27T01:00:00Z", 1,  +3600, "BST";
 try "2039-10-30T00:59:59Z", 1,  +3600, "BST";
 try "2039-10-30T01:00:00Z", 0,     +0, "GMT";
+
+$tz = DateTime::TimeZone::Tzfile->new("t/davis.tz");
+try "1953-07-01T12:00:00Z", "zone disuse";
+try "1957-01-12T23:59:59Z", "zone disuse";
+try "1957-01-13T00:00:00Z", 0, +25200, "DAVT";
+try "1960-01-01T12:00:00Z", 0, +25200, "DAVT";
+try "1964-10-31T16:59:59Z", 0, +25200, "DAVT";
+try "1964-10-31T17:00:00Z", "zone disuse";
+try "1967-01-01T12:00:00Z", "zone disuse";
+try "1969-01-31T23:59:59Z", "zone disuse";
+try "1969-02-01T00:00:00Z", 0, +25200, "DAVT";
+try "1980-01-01T12:00:00Z", 0, +25200, "DAVT";
 
 1;
