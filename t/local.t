@@ -64,6 +64,7 @@ try "2039-10-30T01:00:00", +0;
 try "2039-10-30T01:59:59", +0;
 try "2039-10-30T02:00:00", +0;
 
+# The Davis base in Antarctica has been uninhabited at times.
 $tz = DateTime::TimeZone::Tzfile->new("t/Davis.tz");
 try "1953-07-01T12:00:00", "zone disuse";
 try "1957-01-13T06:59:59", "zone disuse";
