@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 43;
+use Test::More tests => 53;
 
 {
 	package FakeLocalDateTime;
@@ -75,5 +75,13 @@ try "1967-01-01T12:00:00", "zone disuse";
 try "1969-02-01T06:59:59", "zone disuse";
 try "1969-02-01T07:00:00", +25200;
 try "1980-01-01T12:00:00", +25200;
+try "2009-10-17T23:59:59", +25200;
+try "2009-10-18T00:00:00", +18000;
+try "2010-01-01T12:00:00", +18000;
+try "2010-03-11T00:59:59", +18000;
+try "2010-03-11T01:00:00", "offset change";
+try "2010-03-11T02:59:59", "offset change";
+try "2010-03-11T03:00:00", +25200;
+try "2011-01-01T12:00:00", +25200;
 
 1;

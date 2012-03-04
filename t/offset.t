@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 1516;
+use Test::More tests => 1534;
 
 {
 	package FakeUtcDateTime;
@@ -562,5 +562,11 @@ try "1967-01-01T12:00:00Z", "zone disuse";
 try "1969-01-31T23:59:59Z", "zone disuse";
 try "1969-02-01T00:00:00Z", 0, +25200, "DAVT";
 try "1980-01-01T12:00:00Z", 0, +25200, "DAVT";
+try "2009-10-17T18:59:59Z", 0, +25200, "DAVT";
+try "2009-10-17T19:00:00Z", 0, +18000, "DAVT";
+try "2010-01-01T12:00:00Z", 0, +18000, "DAVT";
+try "2010-03-10T19:59:59Z", 0, +18000, "DAVT";
+try "2010-03-10T20:00:00Z", 0, +25200, "DAVT";
+try "2011-01-01T12:00:00Z", 0, +25200, "DAVT";
 
 1;
