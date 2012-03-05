@@ -4,8 +4,9 @@ use warnings;
 use strict;
 
 use Date::ISO8601 0.000 qw(present_ymd);
-use Date::JD 0.001 qw(rdn_to_cjdn);
 use DateTime::TimeZone::Tzfile;
+
+my $rdn_epoch_cjdn = 1721425;
 
 BEGIN {
 	*fdiv = \&DateTime::TimeZone::Tzfile::_fdiv;
@@ -28,7 +29,7 @@ printf "initial: %s\n", dump_obs($tz->{obs_types}->[0]);
 for(my $i = 0; $i != @{$tz->{trn_times}}; $i++) {
 	my($trn_rdn, $trn_secs) = @{$tz->{trn_times}->[$i]};
 	printf "from %sT%02d:%02d:%02dZ: %s\n",
-		present_ymd(rdn_to_cjdn($trn_rdn)),
+		present_ymd($trn_rdn + $rdn_epoch_cjdn),
 		fdiv($trn_secs, 3600),
 		fdiv($trn_secs, 60) % 60,
 		$trn_secs % 60,

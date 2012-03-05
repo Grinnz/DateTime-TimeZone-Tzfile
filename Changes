@@ -3,6 +3,9 @@
 
   * distinguish between zone disuse and missing data
 
+  * eliminate use of Date::JD, because it's too heavy to justify the
+    minimal convenience gained from it
+
   * test more error cases
 
   * test behaviour around leap seconds

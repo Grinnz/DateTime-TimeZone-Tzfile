@@ -15,7 +15,6 @@ Module::Build->new(
 	},
 	build_requires => {
 		"Date::ISO8601" => 0,
-		"Date::JD" => "0.005",
 		"IO::File" => "1.13",
 		"Module::Build" => 0,
 		"Test::More" => 0,
@@ -26,7 +25,6 @@ Module::Build->new(
 	requires => {
 		"Carp" => 0,
 		"Date::ISO8601" => 0,
-		"Date::JD" => "0.005",
 		"DateTime::TimeZone::SystemV" => "0.002",
 		"IO::File" => "1.13",
 		"IO::Handle" => "1.08",

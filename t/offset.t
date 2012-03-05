@@ -6,11 +6,11 @@ use Test::More tests => 1693;
 {
 	package FakeUtcDateTime;
 	use Date::ISO8601 0.000 qw(ymd_to_cjdn);
-	use Date::JD 0.005 qw(cjdn_to_rdnn);
+	my $rdn_epoch_cjdn = 1721425;
 	sub new {
 		my($class, $y, $mo, $d, $h, $mi, $s) = @_;
 		return bless({
-			rdn => cjdn_to_rdnn(ymd_to_cjdn($y, $mo, $d)),
+			rdn => ymd_to_cjdn($y, $mo, $d) - $rdn_epoch_cjdn,
 			sod => 3600*$h + 60*$mi + $s,
 		}, $class);
 	}

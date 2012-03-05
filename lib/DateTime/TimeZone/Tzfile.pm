@@ -43,12 +43,13 @@ use strict;
 
 use Carp qw(croak);
 use Date::ISO8601 0.000 qw(present_ymd);
-use Date::JD 0.005 qw(rdn_to_cjdnn);
 use IO::File 1.13;
 use IO::Handle 1.08;
 use Params::Classify 0.000 qw(is_undef is_string is_ref);
 
 our $VERSION = "0.006";
+
+my $rdn_epoch_cjdn = 1721425;
 
 # _fdiv(A, B), _fmod(A, B): divide A by B, flooring remainder
 #
@@ -328,7 +329,7 @@ sub new {
 sub _present_rdn_sod($$) {
 	my($rdn, $sod) = @_;
 	return sprintf("%sT%02d:%02d:%02d",
-		present_ymd(rdn_to_cjdnn($rdn)),
+		present_ymd($rdn + $rdn_epoch_cjdn),
 		int($sod/3600), int($sod/60)%60, $sod%60);
 }
 
