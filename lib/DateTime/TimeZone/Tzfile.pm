@@ -139,11 +139,11 @@ sub _read_s32($) {
 
 sub _read_u8($) { ord(_saferead($_[0], 1)) }
 
-use constant UNIX_EPOCH_RDN => 719163;
+my $unix_epoch_rdn = 719163;
 
 sub _read_tm32($) {
 	my $t = _read_s32($_[0]);
-	return [ UNIX_EPOCH_RDN + _fdiv($t, 86400), _fmod($t, 86400) ];
+	return [ $unix_epoch_rdn + _fdiv($t, 86400), _fmod($t, 86400) ];
 }
 
 sub _read_tm64($) {
@@ -159,10 +159,10 @@ sub _read_tm64($) {
 	my $d4 = _fdiv($th, 86400);
 	$th = _fmod($th, 86400);
 	my $d = $dh * 4294967296 + $d2 * 4194304 + (($d3 << 12) + $d4);
-	return [ UNIX_EPOCH_RDN + $d, $th ];
+	return [ $unix_epoch_rdn + $d, $th ];
 }
 
-use constant FACTORY_ABBR => "Local time zone must be set--see zic manual page";
+my $factory_abbr = "Local time zone must be set--see zic manual page";
 
 sub new {
 	my $class = shift;
@@ -295,10 +295,10 @@ sub new {
 			if $obs_type >= $typecnt;
 		$obs_type = $types[$obs_type];
 	}
-	if(defined($late_rule) && $late_rule eq "<".FACTORY_ABBR.">0" &&
+	if(defined($late_rule) && $late_rule eq "<$factory_abbr>0" &&
 			defined($obs_types[-1]) && $obs_types[-1]->[0] == 0 &&
 			!$obs_types[-1]->[1] &&
-			$obs_types[-1]->[2] eq FACTORY_ABBR) {
+			$obs_types[-1]->[2] eq $factory_abbr) {
 		# This bizarre timezone abbreviation is used in the Factory
 		# timezone in the Olson database.  It's not valid in a
 		# SysV-style TZ value, because it contains spaces, but zic
