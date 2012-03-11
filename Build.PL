@@ -36,6 +36,12 @@ Module::Build->new(
 	},
 	dynamic_config => 0,
 	meta_add => { distribution_type => "module" },
+	meta_merge => {
+		resources => {
+			repository => "git://lake.fysh.org/zefram/".
+				"DateTime-TimeZone-Tzfile.git",
+		},
+	},
 	create_makefile_pl => "passthrough",
 	sign => 1,
 )->create_build_script;
