@@ -315,7 +315,7 @@ sub new {
 			$obs_types[-1] = "zone disuse";
 		} else {
 			require DateTime::TimeZone::SystemV;
-			DateTime::TimeZone::SystemV->VERSION("0.002");
+			DateTime::TimeZone::SystemV->VERSION("0.007");
 			$obs_types[-1] =
 				DateTime::TimeZone::SystemV->new($late_rule);
 		}
