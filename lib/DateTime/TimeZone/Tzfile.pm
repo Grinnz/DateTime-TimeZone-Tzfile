@@ -47,7 +47,7 @@ use IO::File 1.13;
 use IO::Handle 1.08;
 use Params::Classify 0.000 qw(is_undef is_string is_ref);
 
-our $VERSION = "0.007";
+our $VERSION = "0.008";
 
 my $rdn_epoch_cjdn = 1721425;
 
@@ -576,7 +576,7 @@ Andrew Main (Zefram) <zefram@fysh.org>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2007, 2009, 2010, 2011, 2012
+Copyright (C) 2007, 2009, 2010, 2011, 2012, 2013
 Andrew Main (Zefram) <zefram@fysh.org>
 
 =head1 LICENSE
