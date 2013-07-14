@@ -38,7 +38,7 @@ Module::Build->new(
 	meta_add => { distribution_type => "module" },
 	meta_merge => {
 		resources => {
-			repository => "git://lake.fysh.org/zefram/".
+			repository => "git://git.fysh.org/zefram/".
 				"DateTime-TimeZone-Tzfile.git",
 		},
 	},
