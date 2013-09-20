@@ -47,7 +47,7 @@ use IO::File 1.13;
 use IO::Handle 1.08;
 use Params::Classify 0.000 qw(is_undef is_string is_ref);
 
-our $VERSION = "0.008";
+our $VERSION = "0.009";
 
 my $rdn_epoch_cjdn = 1721425;
 
