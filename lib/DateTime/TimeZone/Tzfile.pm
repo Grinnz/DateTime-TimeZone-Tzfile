@@ -317,7 +317,7 @@ sub new {
 			$obs_types[-1] = "zone disuse";
 		} else {
 			require DateTime::TimeZone::SystemV;
-			DateTime::TimeZone::SystemV->VERSION("0.008");
+			DateTime::TimeZone::SystemV->VERSION("0.009");
 			$obs_types[-1] =
 				DateTime::TimeZone::SystemV->new(
 					system => $fmtversion ge "3" ?
