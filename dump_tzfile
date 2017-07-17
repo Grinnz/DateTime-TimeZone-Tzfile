@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+BEGIN { pop @INC if ($INC[-1] || "") eq "."; }
+
 use warnings;
 use strict;
 
