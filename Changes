@@ -1,5 +1,7 @@
   * no longer include a Makefile.PL in the distribution
 
+  * in META.json, specify type of public repository
+
 version 0.010; 2013-09-21
 
   * bugfix: require bugfixed version of DateTime::TimeZone::SystemV to
