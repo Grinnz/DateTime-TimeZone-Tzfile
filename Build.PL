@@ -39,6 +39,13 @@ Module::Build->new(
 	meta_merge => {
 		"meta-spec" => { version => "2" },
 		resources => {
+			bugtracker => {
+				mailto => "bug-DateTime-TimeZone-Tzfile".
+					"\@rt.cpan.org",
+				web => "https://rt.cpan.org/Public/Dist/".
+					"Display.html?Name=".
+					"DateTime-TimeZone-Tzfile",
+			},
 			repository => {
 				type => "git",
 				url => "git://git.fysh.org/zefram/".
