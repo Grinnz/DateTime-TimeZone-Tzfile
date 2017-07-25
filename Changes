@@ -1,3 +1,5 @@
+version 0.011; 2017-07-25
+
   * no longer include a Makefile.PL in the distribution
 
   * in documentation, use four-column indentation for all verbatim
